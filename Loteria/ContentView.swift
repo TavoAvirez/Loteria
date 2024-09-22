@@ -15,7 +15,7 @@ struct ContentView: View {
     // Inicialización de la vista
     init() {
         // Define las opciones iniciales
-        let initialOptions = GameModel.GameOptions(changeInterval: 1, soundEnabled: true)
+        let initialOptions = GameModel.GameOptions(changeInterval: 5, soundEnabled: true)
         
         // Inicializa el StateObject con el GameModel y las opciones
         _gameModel = StateObject(wrappedValue: GameModel(options: initialOptions))
@@ -56,6 +56,7 @@ struct CardAppear: View {
             HStack {
                 // Sección izquierda (Botón)
                 VStack {
+                    //                    Text("Height: \(screenHeight)")
                     Button(action: {
                         if gameModel.gameStarted {
                             gameModel.pauseGame()
@@ -73,7 +74,7 @@ struct CardAppear: View {
                         TimerModal(gameModel: gameModel)
                     }
                     
-                    if gameModel.gameStarted || gameModel.gamePaused {
+                    if gameModel.gameStarted || gameModel.gamePaused || gameModel.cartasUsadas.count == 54{
                         Button(action: {
                             gameModel.resetGame()
                         }) {
@@ -93,12 +94,16 @@ struct CardAppear: View {
                     //                                    Text("\(geometry)")
                     if gameModel.showImage {
                         ZStack {
-                            if screenHeight <= 926 { // iPhone 12 Pro Max, 13 Pro Max, 14 Plus, 14 Pro Max
+                            
+                            if screenHeight >= 896 { // iPhone 11 Pro Max, iPhone 12/13/14 Pro Max
                                 progressRectangule()
-                                    .frame(height: 50)
+                                    .frame(height: 410)
+                            } else if screenHeight >= 812 { // iPhone X, iPhone 12/13/14, etc.
+                                progressRectangule()
+                                    .frame(height: 350)
                             } else {
                                 progressRectangule()
-                                    .frame(height: 50) // Altura para dispositivos más grandes
+                                    .frame(height: 150)
                             }
                             
                             
@@ -108,7 +113,7 @@ struct CardAppear: View {
                                 .padding(.horizontal, 8)
                                 .transition(.slide)
                                 .onTapGesture {
-                                    if gameModel.gameStarted {
+                                    if !gameModel.gamePaused {
                                         gameModel.pauseGame()
                                     } else {
                                         gameModel.continueGame()
@@ -156,6 +161,10 @@ struct CardAppear: View {
                 //boton derecho
                 VStack {
                     Button(action: {
+                        print("gameModel.gameStarted: \(gameModel.gameStarted)")
+                        if gameModel.gameStarted {
+                            gameModel.pauseGame()
+                        }
                         gameModel.showOptionsModal = true
                     }) {
                         Image(systemName: "gear")
@@ -166,7 +175,11 @@ struct CardAppear: View {
                             .cornerRadius(10)
                     }
                     .sheet(isPresented: $gameModel.showOptionsModal) {
+                        // Reanudar el juego cuando el modal desaparece
                         OptionsModal(gameModel: gameModel)
+                            .onDisappear {
+                                gameModel.continueGame() // Reanudar el juego al cerrar el modal
+                            }
                     }
                 }
                 .padding(0)
@@ -208,6 +221,10 @@ struct UsedCards: View {
                 }
             }
         }
+        
+        //        Text("Cartas restantes: \(gameModel.loteriaCartasEnJuego.count)")
+        //        Text("Cartas usadas: \(gameModel.cartasUsadas.count)")
+//        Text("segundos: \(gameModel.options.changeInterval)")
     }
 }
 
@@ -222,7 +239,7 @@ struct TimerModal: View {
         NavigationView {
             List(1...15, id: \.self) { option in
                 Button(action: {
-                    gameModel.gameOptions.changeInterval = TimeInterval(option) // Asegúrate de que sea TimeInterval
+                    gameModel.options.changeInterval = TimeInterval(option) // Asegúrate de que sea TimeInterval
                     gameModel.continueGame()
                     dismiss() // Cierra el modal al seleccionar una opción
                 }) {
@@ -237,16 +254,24 @@ struct TimerModal: View {
 // Vista emergente de opciones
 struct OptionsModal: View {
     @ObservedObject var gameModel: GameModel // Observa el modelo de juego
+    
     @Environment(\.dismiss) var dismiss // Permite cerrar la vista modal
     
     var body: some View {
         NavigationView {
             Form {
-                // Control deslizante para ajustar el intervalo de cambio de carta
-                Section(header: Text("Intervalo de Cambio")) {
-                    Slider(value: $gameModel.options.changeInterval, in: 1...10, step: 0.5) {
-                        Text("Intervalo")
+                VStack {
+                    // Control deslizante para ajustar el intervalo de cambio de carta
+                    Section(header: Text("Intervalo de cambio de carta")) {
+                        Slider(value: $gameModel.options.changeInterval, in: 1...15, step: 1) {
+                            Text("Intervalo")
+                        }
                     }
+                    Text("Intervalo: \(Int(gameModel.options.changeInterval)) segundos")
+                        .font(.subheadline) // Puedes ajustar el estilo del texto
+                        .foregroundColor(.gray) // Color opcional para el texto
+                    
+                    
                 }
                 
                 // Switch para habilitar/deshabilitar el sonido
@@ -257,9 +282,10 @@ struct OptionsModal: View {
             .navigationTitle("Opciones del Juego")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cerrar") {
-                        // Aquí cerraríamos la vista emergente
+                    Button(action: {
                         UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true)
+                    }) {
+                        Text("Cerrar")
                     }
                 }
             }
