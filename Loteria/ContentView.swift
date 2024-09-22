@@ -47,7 +47,7 @@ struct CardAppear: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
-                .sheet(isPresented: $gameModel.showOptions) {                    
+                .sheet(isPresented: $gameModel.showOptions) {
                     OptionsView(gameModel: gameModel)
                 }
 
@@ -72,7 +72,7 @@ struct CardAppear: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
                                  .trim(from: 0.0, to: gameModel.progress)
-                                 .stroke(Color.blue, lineWidth: 6.0)
+                                 .stroke(.timerRectangleBorder, lineWidth: 6.0)
                                  .animation(.linear, value: gameModel.progress)
                                  .frame(maxWidth: .infinity, maxHeight: 349)
                    
@@ -85,7 +85,7 @@ struct CardAppear: View {
                                 if gameModel.gameStarted {
                                     gameModel.pauseGame()
                                 } else {
-                                    gameModel.startTimer()
+                                    gameModel.continueGame()
                                 }
                             }
                     }
@@ -179,15 +179,13 @@ struct OptionsView: View {
             List(1...15, id: \.self) { option in
                 Button(action: {
                     gameModel.changeInterval = TimeInterval(option) // Asegúrate de que sea TimeInterval
+                    gameModel.continueGame()
                     dismiss() // Cierra el modal al seleccionar una opción
                 }) {
                     Text(String(option))
                 }
             }
             .navigationTitle("Selecciona una Opción")
-            .navigationBarItems(trailing: Button("Cerrar") {
-                dismiss() // Cierra el modal al presionar "Cerrar"
-            })
         }
     }
 }

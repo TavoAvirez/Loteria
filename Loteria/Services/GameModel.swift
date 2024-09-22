@@ -13,7 +13,7 @@ class GameModel: ObservableObject {
     @Published var cartasUsadas: [Carta] = []
     @Published var gameStarted = false
     @Published var gamePaused = false
-    @Published var changeInterval: TimeInterval = 2
+    @Published var changeInterval: TimeInterval = 3
     @Published var loteriaCartasEnJuego: [Carta] = []
     @Published var showImage = false
     @Published var cardName: String = ""
@@ -26,14 +26,14 @@ class GameModel: ObservableObject {
     var timerRectangle: Timer?
     var timeRemaining: TimeInterval = 0
     
-
-
+    
+    
     struct Carta: Identifiable, Equatable{
         let id = UUID() // Identificador único
         let nombre: String
     }
-
-
+    
+    
     
     
     // Lista de cartas completas
@@ -58,9 +58,9 @@ class GameModel: ObservableObject {
         Carta(nombre: "valiente"), Carta(nombre: "venado"), Carta(nombre: "violoncello")
     ]
     
-
+    
     // Este método se llama para reiniciar las cartas en juego
-     func resetGame() {
+    func resetGame() {
         stopTimer()
         stopTimerRectangle()
         showImage = false
@@ -73,38 +73,48 @@ class GameModel: ObservableObject {
         loteriaCartasEnJuego = loteriaCartasCompletas.map { Carta(nombre: $0.nombre) }
         
     }
-
+    
     func stopTimer() {
         gameStarted = false
         timer?.cancel() // Detén el temporizador
         timer = nil // Limpia el temporizador
     }
-
+    
     func stopTimerRectangle() {
         timerRectangle?.invalidate()
         timerRectangle = nil
     }
-
+    
     func startTimerRectangle() {
-        progress = 0.0
-        timerRectangle = Timer.scheduledTimer(withTimeInterval: changeInterval / 100.0, repeats: true) { _ in
-            if self.progress < 1.0 {                
-                self.progress += 0.01 // Incrementa el progreso
+        // Asegúrate de que el progreso comience en 0
+        self.progress = 0.0
+
+        // Detén cualquier temporizador anterior antes de iniciar uno nuevo
+        stopTimerRectangle()
+
+        // Inicializa el temporizador con el intervalo adecuado para el progreso
+        let step = 0.01 // El progreso aumentará en pasos de 1%
+        let interval = changeInterval * step // Define el intervalo en función de la duración total
+        
+        timerRectangle = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+            if self.progress < 1.0 {
+                self.progress += step // Incrementa el progreso gradualmente
             } else {
-                self.stopTimerRectangle() // Detiene el temporizador al completar el progreso
+                self.stopTimerRectangle() // Detiene el temporizador cuando el progreso llega al 100%
             }
         }
     }
+    
     struct SoundModel {
         let soundName: String
         var bombSoundEffect: AVAudioPlayer?
-
+        
         init(soundName: String) {
             self.soundName = soundName
-
+            
             if let path = Bundle.main.path(forResource: soundName, ofType: "m4a") {
                 let url = URL(fileURLWithPath: path)
-
+                
                 do {
                     bombSoundEffect = try AVAudioPlayer(contentsOf: url)
                     bombSoundEffect?.prepareToPlay() // Prepara el sonido para la reproducción
@@ -115,12 +125,12 @@ class GameModel: ObservableObject {
                 print("Archivo de sonido no encontrado para \(soundName).")
             }
         }
-
+        
         func playSound() {
             bombSoundEffect?.play() // Reproduce el sonido
         }
     }
-
+    
     func startTimer() {
         self.gameStarted = true
         self.timeRemaining = self.changeInterval // Reinicia el tiempo restante
@@ -154,23 +164,24 @@ class GameModel: ObservableObject {
                 }
             }
     }
-
-
+    
+    
     func randomElement(from array: inout [Carta]) -> Carta? {
         guard !array.isEmpty else { return nil }
         return array.remove(at: Int.random(in: 0..<array.count)) // Elimina y devuelve una carta aleatoria
     }
-
+    
     func pauseGame() {
         gamePaused = true
-          stopTimer()
-          stopTimerRectangle()
-      }
-      
+        stopTimer()
+        stopTimerRectangle()
+    }
+    
     func continueGame() {
-          startTimer()
-          gamePaused = false
-      }
-
+        gamePaused = false
+        startTimer()
+        startTimerRectangle()
+    }
+    
     // Otros métodos que manejen la lógica del juego...
 }
