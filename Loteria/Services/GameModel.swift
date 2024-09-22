@@ -144,6 +144,7 @@ class GameModel: ObservableObject {
                 } else {
                     withAnimation {
                         self.showImage = false // Oculta la imagen actual
+                        
                         // Espera un pequeño tiempo para la transición de ocultar antes de mostrar la nueva imagen
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             if let cartaAleatoria = self.randomElement(from: &self.loteriaCartasEnJuego) {
@@ -157,6 +158,17 @@ class GameModel: ObservableObject {
                                 // Inicializa el modelo de sonido y reproduce el sonido
                                 self.soundModel = SoundModel(soundName: self.cardName) // Cambia aquí el nombre del sonido
                                 self.soundModel?.playSound()
+                            } else {
+                                // Si no hay más cartas, asegúrate de mostrar la última imagen y reproducir el sonido
+                                if let lastCard = self.cartasUsadas.last {
+                                    self.cardName = lastCard.nombre
+                                    self.showImage = true
+                                    
+                                    // Reproduce el sonido de la última carta
+                                    self.soundModel = SoundModel(soundName: self.cardName)
+                                    self.soundModel?.playSound()
+                                }
+                                self.stopTimer()
                             }
                             self.timeRemaining = self.changeInterval // Reinicia el tiempo restante
                         }
@@ -164,6 +176,7 @@ class GameModel: ObservableObject {
                 }
             }
     }
+
     
     
     func randomElement(from array: inout [Carta]) -> Carta? {

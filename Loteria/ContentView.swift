@@ -93,8 +93,13 @@ struct CardAppear: View {
                 }
                 Spacer()
                 if !gameModel.gameStarted && !gameModel.showImage {
-                    Button(action: {
-                        gameModel.startTimer()
+                    Button(action: {                        
+                        // Inicializa y reproduce el sonido de inicio
+                               gameModel.soundModel = .init(soundName: "inicio")
+                               gameModel.soundModel?.playSound()
+
+                               // Inicia el temporizador después de reproducir el sonido
+                               gameModel.startTimer()
                     }) {
                         Text("Iniciar")
                             .padding()
