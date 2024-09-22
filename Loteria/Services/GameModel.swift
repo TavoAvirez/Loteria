@@ -10,22 +10,34 @@ import SwiftUI
 import AVFoundation
 
 class GameModel: ObservableObject {
+    
+    @Published var options: GameOptions
+    
+    var gameOptions = GameOptions(
+        changeInterval: 3.0,     // Intervalo de cambio de carta
+        soundEnabled: true      // Sonido activado
+    )
+    
     @Published var cartasUsadas: [Carta] = []
     @Published var gameStarted = false
     @Published var gamePaused = false
-    @Published var changeInterval: TimeInterval = 3
+    
     @Published var loteriaCartasEnJuego: [Carta] = []
     @Published var showImage = false
     @Published var cardName: String = ""
     // Propiedad para manejar el sonido
     @Published var soundModel: SoundModel?
-    @Published var showOptions = false
+    @Published var showTimerModal = false
+    @Published var showOptionsModal = false
     @Published var progress: CGFloat = 0.0
     
     var timer: AnyCancellable?
     var timerRectangle: Timer?
     var timeRemaining: TimeInterval = 0
     
+    init(options: GameOptions) {
+        self.options = options
+    }
     
     
     struct Carta: Identifiable, Equatable{
@@ -33,6 +45,11 @@ class GameModel: ObservableObject {
         let nombre: String
     }
     
+    struct GameOptions {
+        var changeInterval: TimeInterval
+        var soundEnabled: Bool
+        
+    }
     
     
     
@@ -66,7 +83,7 @@ class GameModel: ObservableObject {
         showImage = false
         gameStarted = false
         gamePaused = false
-        timeRemaining = changeInterval
+        timeRemaining = gameOptions.changeInterval
         progress = 0.0 // Reinicia el progreso
         
         cartasUsadas.removeAll()
@@ -80,44 +97,32 @@ class GameModel: ObservableObject {
         timer = nil // Limpia el temporizador
     }
     
-    func stopTimerRectangle() {
-        timerRectangle?.invalidate()
-        timerRectangle = nil
-    }
     
-    func startTimerRectangle() {
-        // Asegúrate de que el progreso comience en 0
-        self.progress = 0.0
-
-        // Detén cualquier temporizador anterior antes de iniciar uno nuevo
-        stopTimerRectangle()
-
-        // Inicializa el temporizador con el intervalo adecuado para el progreso
-        let step = 0.01 // El progreso aumentará en pasos de 1%
-        let interval = changeInterval * step // Define el intervalo en función de la duración total
-        
-        timerRectangle = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
-            if self.progress < 1.0 {
-                self.progress += step // Incrementa el progreso gradualmente
-            } else {
-                self.stopTimerRectangle() // Detiene el temporizador cuando el progreso llega al 100%
-            }
-        }
-    }
     
-    struct SoundModel {
+    
+    class SoundModel: NSObject, AVAudioPlayerDelegate {
         let soundName: String
         var bombSoundEffect: AVAudioPlayer?
+        var soundEnabled: Bool // Pasar esta configuración desde GameModel
+        var initialSound: Bool // Sonido inicial
         
-        init(soundName: String) {
+        weak var gameModel: GameModel? // Referencia al GameModel para poder llamar a changeCard()
+
+        init(soundName: String, soundEnabled: Bool, initialSound: Bool = false, gameModel: GameModel) {
             self.soundName = soundName
-            
+            self.soundEnabled = soundEnabled
+            self.initialSound = initialSound
+            self.gameModel = gameModel // Pasar el GameModel al inicializar
+
+            super.init() // Llama a super.init() ya que estamos usando NSObject
+
             if let path = Bundle.main.path(forResource: soundName, ofType: "m4a") {
                 let url = URL(fileURLWithPath: path)
                 
                 do {
                     bombSoundEffect = try AVAudioPlayer(contentsOf: url)
                     bombSoundEffect?.prepareToPlay() // Prepara el sonido para la reproducción
+                    bombSoundEffect?.delegate = self // Establece el delegado
                 } catch {
                     print("Error al cargar el sonido: \(error)")
                 }
@@ -127,56 +132,116 @@ class GameModel: ObservableObject {
         }
         
         func playSound() {
-            bombSoundEffect?.play() // Reproduce el sonido
+            if soundEnabled {
+                bombSoundEffect?.play() // Reproduce el sonido
+            }
+        }
+
+        // Método delegado que se llama cuando el sonido termina de reproducirse
+        func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+            if flag {
+                if initialSound {
+                    gameModel?.changeCard()
+                }
+                print("El sonido \(soundName) ha terminado de reproducirse correctamente.")
+            } else {
+                print("El sonido \(soundName) no terminó correctamente.")
+            }
+        }
+    }
+    
+    func stopTimerRectangle() {
+        timerRectangle?.invalidate()
+        timerRectangle = nil
+    }
+    
+    func startTimerRectangle() {
+        stopTimerRectangle() // Detener cualquier temporizador activo
+        
+        // Reiniciar el progreso a 0.0 al iniciar el temporizador
+        self.progress = 0.0
+        
+        // Establecer el tiempo total de la duración
+        let totalTime = gameOptions.changeInterval
+        let step = 0.01
+        let totalSteps = Int(1.0 / step) // Número total de pasos para completar el progreso
+        let interval = totalTime / Double(totalSteps) // Intervalo para cada paso
+        
+        timerRectangle = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+            if self.progress < 1.0 {
+                self.progress += step // Incrementa el progreso de manera gradual
+            } else {
+                self.stopTimerRectangle() // Detén el temporizador al llegar a 100%
+            }
         }
     }
     
     func startTimer() {
         self.gameStarted = true
-        self.timeRemaining = self.changeInterval // Reinicia el tiempo restante
-        self.startTimerRectangle()
         
+        // Si el juego estaba en pausa, continúa desde donde quedó
+        if gamePaused {
+            gamePaused = false
+            startTimerRectangle() // Continúa el progreso visual
+        } else {
+            self.timeRemaining = self.gameOptions.changeInterval // Reiniciar el temporizador si es un nuevo juego
+            self.progress = 0.0 // Reiniciar el progreso visual
+            startTimerRectangle()
+        }
+        
+        // Iniciar o continuar el temporizador del juego
         timer = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .sink { _ in
                 if self.timeRemaining > 0 {
                     self.timeRemaining -= 1
                 } else {
-                    withAnimation {
-                        self.showImage = false // Oculta la imagen actual
-                        
-                        // Espera un pequeño tiempo para la transición de ocultar antes de mostrar la nueva imagen
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            if let cartaAleatoria = self.randomElement(from: &self.loteriaCartasEnJuego) {
-                                self.startTimerRectangle()
-                                self.cardName = cartaAleatoria.nombre
-                                self.cartasUsadas.append(cartaAleatoria) // Agrega la carta utilizada al array
-                                
-                                // Muestra la nueva imagen
-                                self.showImage = true
-                                
-                                // Inicializa el modelo de sonido y reproduce el sonido
-                                self.soundModel = SoundModel(soundName: self.cardName) // Cambia aquí el nombre del sonido
-                                self.soundModel?.playSound()
-                            } else {
-                                // Si no hay más cartas, asegúrate de mostrar la última imagen y reproducir el sonido
-                                if let lastCard = self.cartasUsadas.last {
-                                    self.cardName = lastCard.nombre
-                                    self.showImage = true
-                                    
-                                    // Reproduce el sonido de la última carta
-                                    self.soundModel = SoundModel(soundName: self.cardName)
-                                    self.soundModel?.playSound()
-                                }
-                                self.stopTimer()
-                            }
-                            self.timeRemaining = self.changeInterval // Reinicia el tiempo restante
-                        }
-                    }
+                    self.changeCard() // Llamar a la nueva función para cambiar la carta
                 }
             }
     }
+    
+    func changeCard() {
 
+        withAnimation {
+            self.showImage = false // Ocultar la imagen actual
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if let cartaAleatoria = self.randomElement(from: &self.loteriaCartasEnJuego) {
+                    self.cardName = cartaAleatoria.nombre
+                    self.cartasUsadas.append(cartaAleatoria) // Agregar carta usada
+                    
+                    // Mostrar la nueva carta
+                    self.showImage = true
+                    
+                    // Reiniciar el progreso visual
+                    self.progress = 0.0 // Reiniciar el progreso
+                    self.startTimerRectangle() // Reiniciar el progreso visual aquí
+                    
+                    // Reproducir el sonido asociado
+                    self.soundModel = SoundModel(soundName: self.cardName, soundEnabled: self.options.soundEnabled, gameModel: self)
+                    self.soundModel?.playSound()
+                } else {
+                    // Si no quedan cartas, muestra la última y reproduce el sonido
+                    if let lastCard = self.cartasUsadas.last {
+                        self.cardName = lastCard.nombre
+                        self.showImage = true
+                        
+                        self.soundModel = SoundModel(soundName: self.cardName, soundEnabled: self.options.soundEnabled, gameModel: self)
+                        self.soundModel?.playSound()
+                    }
+                    self.stopTimer() // Detén el temporizador
+                }
+                
+                // Reiniciar el temporizador
+                self.timeRemaining = self.gameOptions.changeInterval
+            }
+        }
+    }
+    
+    
+    
+    
     
     
     func randomElement(from array: inout [Carta]) -> Carta? {
@@ -184,16 +249,21 @@ class GameModel: ObservableObject {
         return array.remove(at: Int.random(in: 0..<array.count)) // Elimina y devuelve una carta aleatoria
     }
     
+    
+    
+    
     func pauseGame() {
         gamePaused = true
-        stopTimer()
-        stopTimerRectangle()
+        stopTimer() // Pausa el temporizador del juego
+        stopTimerRectangle() // Pausa el progreso del rectángulo
     }
     
     func continueGame() {
-        gamePaused = false
-        startTimer()
-        startTimerRectangle()
+        if gamePaused {
+            gamePaused = false
+            startTimer() // Continúa el temporizador del juego
+            startTimerRectangle() // Continúa el progreso del rectángulo
+        }
     }
     
     // Otros métodos que manejen la lógica del juego...
