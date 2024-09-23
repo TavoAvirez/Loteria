@@ -40,6 +40,7 @@ class GameModel: ObservableObject {
     @Published var showTimerModal = false
     @Published var showOptionsModal = false
     @Published var progress: CGFloat = 0.0
+//    @Published var progressBackup: CGFloat = 0.0
     
     var timer: AnyCancellable?
     var timerRectangle: Timer?
@@ -52,21 +53,7 @@ class GameModel: ObservableObject {
         let id = UUID() // Identificador único
         let nombre: String
     }
-    
-  
-    
-    func restartTimersWithNewInterval() {
-        // Detener el temporizador y el progreso
-        stopTimer()
-        stopTimerRectangle()
-        
-        // Reiniciar el progreso y los temporizadores con el nuevo intervalo
-        startTimerRectangle()
-        startTimer()
-    }
-    
-    
-    
+                  
     // Lista de cartas completas
     @Published var loteriaCartasCompletas = [
         Carta(nombre: "alacran"), Carta(nombre: "apache"), Carta(nombre: "arana"),
@@ -106,7 +93,6 @@ class GameModel: ObservableObject {
     }
     
     func stopTimer() {
-//        gameStarted = false
         timer?.cancel() // Detén el temporizador
         timer = nil // Limpia el temporizador
     }
@@ -165,21 +151,31 @@ class GameModel: ObservableObject {
     }
     
     func stopTimerRectangle() {
+//        print("stop timer rectangle antes \(self.progress)")
         timerRectangle?.invalidate()
         timerRectangle = nil
+
+        
+//        print("stop timer rectangle despues \(self.progress)")
     }
     
     func startTimerRectangle() {
+//        print("startTimerRectangle antes \(self.progress)")
         stopTimerRectangle() // Detener cualquier temporizador activo
+        
+        if !gamePaused {
+            self.progress = 0.0 // Reiniciar el progreso a 0.0 al iniciar el temporizador
+        }
+//        print("startTimerRectangle despues \(self.progress)")
 
-        self.progress = 0.0 // Reiniciar el progreso a 0.0 al iniciar el temporizador
+        gamePaused = false
 
         // Establecer el tiempo total de la duración según el nuevo intervalo
         let totalTime = options.changeInterval
         let step = 0.01
         let totalSteps = Int(1.0 / step) // Número total de pasos para completar el progreso
         let interval = totalTime / Double(totalSteps) // Intervalo para cada paso
-
+        
         timerRectangle = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
             if self.progress < 1.0 {
                 self.progress += step // Incrementa el progreso de manera gradual
@@ -192,14 +188,11 @@ class GameModel: ObservableObject {
     func startTimer() {
         self.gameStarted = true
         
-        // Si el juego estaba en pausa, continúa desde donde quedó
-        if gamePaused {
-            gamePaused = false
-        } else {
-            self.timeRemaining = self.options.changeInterval // Reiniciar el temporizador si es un nuevo juego
-            self.progress = 0.0 // Reiniciar el progreso visual
+
+       if !gamePaused {
+           self.timeRemaining = self.options.changeInterval // Reiniciar el temporizador si es un nuevo juego
         }
-        
+                           
         startTimerRectangle() // Continúa el progreso visual
 
         // Iniciar o continuar el temporizador del juego
@@ -221,6 +214,8 @@ class GameModel: ObservableObject {
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 if let cartaAleatoria = self.randomElement(from: &self.loteriaCartasEnJuego) {
+                    self.stopTimer()
+                    self.stopTimerRectangle()
                     self.cardName = cartaAleatoria.nombre
                     self.cartasUsadas.append(cartaAleatoria) // Agregar carta usada
                     
@@ -229,7 +224,7 @@ class GameModel: ObservableObject {
                     
                     // Reiniciar el progreso visual
                     self.progress = 0.0 // Reiniciar el progreso
-                    self.startTimerRectangle() // Reiniciar el progreso visual aquí
+                    self.startTimer() // Reiniciar el progreso visual aquí
                     
                     // Reproducir el sonido asociado
                     self.soundModel = SoundModel(soundName: self.cardName, soundEnabled: self.options.soundEnabled, gameModel: self)
@@ -278,7 +273,6 @@ class GameModel: ObservableObject {
     func continueGame() {
         print("continue game " + String(describing: gamePaused))
         if gamePaused {
-            gamePaused = false
             startTimer() // Continúa el temporizador del juego
 //            startTimerRectangle() // Continúa el progreso del rectángulo
         }

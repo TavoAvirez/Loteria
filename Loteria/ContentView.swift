@@ -95,7 +95,19 @@ struct CardAppear: View {
                     if gameModel.showImage {
                         ZStack {
                             
-                            if screenHeight >= 896 { // iPhone 11 Pro Max, iPhone 12/13/14 Pro Max
+                            if screenHeight >= 1000 { // ipad pro 13'
+                                if geometry.size.width > geometry.size.height {
+                                    //landscape
+                                    progressRectangule()
+                                        .frame(maxWidth: 470, maxHeight: 730)
+                                } else {
+                                    //portrait
+                                    progressRectangule()
+                                        .frame(width: 585, height: 915)
+                                }
+                                
+                                
+                            }else if screenHeight >= 896 { // iPhone 11 Pro Max, iPhone 12/13/14 Pro Max
                                 progressRectangule()
                                     .frame(height: 410)
                             } else if screenHeight >= 812 { // iPhone X, iPhone 12/13/14, etc.
@@ -106,19 +118,40 @@ struct CardAppear: View {
                                     .frame(height: 150)
                             }
                             
-                            
-                            Image(gameModel.cardName)
-                                .resizable()
-                                .scaledToFit()
-                                .padding(.horizontal, 8)
-                                .transition(.slide)
-                                .onTapGesture {
-                                    if !gameModel.gamePaused {
-                                        gameModel.pauseGame()
-                                    } else {
-                                        gameModel.continueGame()
+                            if geometry.size.width > geometry.size.height {
+                               
+                                Image(gameModel.cardName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(maxWidth: .infinity, maxHeight: 700)
+                                    .padding(.horizontal, 8)
+                                    .transition(.slide)
+                                    .onTapGesture {
+                                        if !gameModel.gamePaused {
+                                            gameModel.pauseGame()
+                                        } else {
+                                            gameModel.continueGame()
+                                        }
                                     }
-                                }
+                            } else {
+                                //portrait
+                                
+                                Image(gameModel.cardName)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(maxWidth: .infinity, maxHeight: 900)
+                                    .padding(.horizontal, 8)
+                                    .transition(.slide)
+                                    .onTapGesture {
+                                        if !gameModel.gamePaused {
+                                            gameModel.pauseGame()
+                                        } else {
+                                            gameModel.continueGame()
+                                        }
+                                    }
+                            }
+                            
+                           
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
@@ -224,7 +257,7 @@ struct UsedCards: View {
         
         //        Text("Cartas restantes: \(gameModel.loteriaCartasEnJuego.count)")
         //        Text("Cartas usadas: \(gameModel.cartasUsadas.count)")
-//        Text("segundos: \(gameModel.options.changeInterval)")
+        //        Text("segundos: \(gameModel.options.changeInterval)")
     }
 }
 
