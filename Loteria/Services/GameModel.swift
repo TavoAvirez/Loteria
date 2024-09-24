@@ -9,13 +9,11 @@ import Combine
 import SwiftUI
 import AVFoundation
 
-class GameModel: ObservableObject {
-    
+class GameModel: ObservableObject{
     @Published var options: GameOptions
-    
     init(options: GameOptions) {
-           self.options = options
-       }
+        self.options = options
+    }
 
     
     class GameOptions: ObservableObject {
@@ -102,52 +100,75 @@ class GameModel: ObservableObject {
     
     class SoundModel: NSObject, AVAudioPlayerDelegate {
         let soundName: String
-        var bombSoundEffect: AVAudioPlayer?
-        var soundEnabled: Bool // Pasar esta configuración desde GameModel
-        var initialSound: Bool // Sonido inicial
-        
-        weak var gameModel: GameModel? // Referencia al GameModel para poder llamar a changeCard()
+          var soundEnabled: Bool
+          var initialSound: Bool
+          var formatType: String
+          
+          weak var gameModel: GameModel?
 
-        init(soundName: String, soundEnabled: Bool, initialSound: Bool = false, gameModel: GameModel) {
-            self.soundName = soundName
-            self.soundEnabled = soundEnabled
-            self.initialSound = initialSound
-            self.gameModel = gameModel // Pasar el GameModel al inicializar
+          init(soundName: String, soundEnabled: Bool, initialSound: Bool = false, gameModel: GameModel, formatType: String = "m4a") {
+              self.soundName = soundName
+              self.soundEnabled = soundEnabled
+              self.initialSound = initialSound
+              self.gameModel = gameModel
+              self.formatType = formatType
+              
+              super.init()
+              
+              if soundEnabled {
+                  SoundQueue.shared.enqueueSound(named: soundName, formatType: formatType, initialSound: initialSound, gameModel: gameModel)
+              }
+          }
+    }
+    
+    class SoundQueue: NSObject, AVAudioPlayerDelegate {
+        static let shared = SoundQueue()
+        private var soundQueue: [(player: AVAudioPlayer, initialSound: Bool, gameModel: GameModel?)] = []
+        private var isPlaying = false
 
-            super.init() // Llama a super.init() ya que estamos usando NSObject
+        // Modificamos el método para recibir initialSound y gameModel
+           func enqueueSound(named soundName: String, formatType: String = "m4a", initialSound: Bool = false, gameModel: GameModel? = nil) {
+               if let path = Bundle.main.path(forResource: soundName, ofType: formatType) {
+                   let url = URL(fileURLWithPath: path)
+                   do {
+                       let player = try AVAudioPlayer(contentsOf: url)
+                       player.delegate = self
+                       soundQueue.append((player: player, initialSound: initialSound, gameModel: gameModel))
+                       playNextSound()
+                   } catch {
+                       print("Error al cargar el sonido: \(error)")
+                   }
+               } else {
+                   print("Archivo de sonido no encontrado: \(soundName).")
+               }
+           }
 
-            if let path = Bundle.main.path(forResource: soundName, ofType: "m4a") {
-                let url = URL(fileURLWithPath: path)
-                
-                do {
-                    bombSoundEffect = try AVAudioPlayer(contentsOf: url)
-                    bombSoundEffect?.prepareToPlay() // Prepara el sonido para la reproducción
-                    bombSoundEffect?.delegate = self // Establece el delegado
-                } catch {
-                    print("Error al cargar el sonido: \(error)")
-                }
-            } else {
-                print("Archivo de sonido no encontrado para \(soundName).")
-            }
-        }
-        
-        func playSound() {
-            if soundEnabled {
-                bombSoundEffect?.play() // Reproduce el sonido
-            }
-        }
+        private func playNextSound() {
+               if !isPlaying, let nextSound = soundQueue.first {
+                   isPlaying = true
+                   nextSound.player.play()
+               }
+           }
 
-        // Método delegado que se llama cuando el sonido termina de reproducirse
-        func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-            if flag {
-                if initialSound {
-                    gameModel?.changeCard()
-                }
-                print("El sonido \(soundName) ha terminado de reproducirse correctamente.")
-            } else {
-                print("El sonido \(soundName) no terminó correctamente.")
-            }
-        }
+
+        // Método delegado que se llama cuando un sonido termina de reproducirse
+           func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+               if flag {
+                   print("Se ha reproducido el sonido \(player.url?.lastPathComponent ?? "desconocido")")
+
+                   // Verifica si es el sonido inicial y cambia la carta si es necesario
+                   if let currentSound = soundQueue.first, currentSound.initialSound {
+                       currentSound.gameModel?.changeCard()
+                   }
+               }
+
+               // Remover el sonido que terminó de reproducirse de la cola
+               soundQueue.removeFirst()
+               isPlaying = false
+
+               // Reproduce el siguiente sonido
+               playNextSound()
+           }
     }
     
     func stopTimerRectangle() {
@@ -208,7 +229,6 @@ class GameModel: ObservableObject {
     }
     
     func changeCard() {
-
         withAnimation {
             self.showImage = false // Ocultar la imagen actual
             
@@ -228,7 +248,7 @@ class GameModel: ObservableObject {
                     
                     // Reproducir el sonido asociado
                     self.soundModel = SoundModel(soundName: self.cardName, soundEnabled: self.options.soundEnabled, gameModel: self)
-                    self.soundModel?.playSound()
+
                 }
                 else {
 //                    // Si no quedan cartas, muestra la última y reproduce el sonido
@@ -262,6 +282,10 @@ class GameModel: ObservableObject {
     
     
     func pauseGame() {
+        
+        // Reproducir el sonido asociado
+        self.soundModel = SoundModel(soundName: "pause1", soundEnabled: self.options.soundEnabled, gameModel: self, formatType: "mp3")
+
         gamePaused = true
         gameStarted = true
         print("Juego pausado: \(gamePaused)")
@@ -271,6 +295,9 @@ class GameModel: ObservableObject {
     }
     
     func continueGame() {
+        // Reproducir el sonido asociado
+        self.soundModel = SoundModel(soundName: "pause1", soundEnabled: self.options.soundEnabled, gameModel: self, formatType: "mp3")
+
         print("continue game " + String(describing: gamePaused))
         if gamePaused {
             startTimer() // Continúa el temporizador del juego

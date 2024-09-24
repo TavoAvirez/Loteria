@@ -11,7 +11,8 @@ import Combine
 struct ContentView: View {
     // Inicializa el modelo del juego con opciones personalizadas usando @StateObject
     @StateObject private var gameModel: GameModel
-    
+    @State private var isVisible = true
+
     // Inicialización de la vista
     init() {
         // Define las opciones iniciales
@@ -23,18 +24,48 @@ struct ContentView: View {
     
     
     var body: some View {
-        VStack {
-            // Sección de cartas usadas
-            UsedCards(gameModel: gameModel)
-            Spacer()
+        ZStack {
+            // Contenido principal del juego
+            VStack {
+                // Sección de cartas usadas
+                UsedCards(gameModel: gameModel)
+                Spacer()
+                
+                // Binding para actualizar las cartas usadas
+                CardAppear(gameModel: gameModel)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(0)
+            .background(.backgroundApp)
             
-            // Binding para actualizar las cartas usadas
-            CardAppear(gameModel: gameModel)
-            
+            // Pantalla de pausa superpuesta
+            if gameModel.gamePaused {
+                Color.black.opacity(0.6) // Cubre la pantalla con un fondo semitransparente
+                    .ignoresSafeArea() // Asegura que cubra toda la pantalla
+                    .onTapGesture {
+                        gameModel.continueGame() // Al tocar, continua el juego
+                    }
+                
+                VStack {
+                    Text("Juego en Pausa")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding()
+                        .opacity(isVisible ? 1 : 0)
+                                  .onAppear {
+                                      withAnimation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                                          isVisible.toggle()
+                                      }
+                                  }
+                    Text("Toca para continuar")
+                        .foregroundColor(.white)
+                        .font(.title2)
+                    
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(0)
-        .background(.backgroundApp)
     }
 }
 
@@ -94,8 +125,8 @@ struct CardAppear: View {
                     //                                    Text("\(geometry)")
                     if gameModel.showImage {
                         ZStack {
-                            
-                            if screenHeight >= 1000 { // ipad pro 13'
+                            // ipad pro 13'
+                            if screenHeight >= 1000 {
                                 if geometry.size.width > geometry.size.height {
                                     //landscape
                                     progressRectangule()
@@ -106,11 +137,12 @@ struct CardAppear: View {
                                         .frame(width: 585, height: 915)
                                 }
                                 
-                                
-                            }else if screenHeight >= 896 { // iPhone 11 Pro Max, iPhone 12/13/14 Pro Max
+                                // iPhone 11 Pro Max, iPhone 12/13/14 Pro Max
+                            }else if screenHeight >= 896 {
                                 progressRectangule()
                                     .frame(height: 410)
-                            } else if screenHeight >= 812 { // iPhone X, iPhone 12/13/14, etc.
+                                // iPhone X, iPhone 12/13/14, etc.
+                            } else if screenHeight >= 812 {
                                 progressRectangule()
                                     .frame(height: 350)
                             } else {
@@ -118,6 +150,10 @@ struct CardAppear: View {
                                     .frame(height: 150)
                             }
                             
+                            
+                            
+                            
+                            // landscape
                             if geometry.size.width > geometry.size.height {
                                
                                 Image(gameModel.cardName)
@@ -129,8 +165,6 @@ struct CardAppear: View {
                                     .onTapGesture {
                                         if !gameModel.gamePaused {
                                             gameModel.pauseGame()
-                                        } else {
-                                            gameModel.continueGame()
                                         }
                                     }
                             } else {
@@ -145,13 +179,10 @@ struct CardAppear: View {
                                     .onTapGesture {
                                         if !gameModel.gamePaused {
                                             gameModel.pauseGame()
-                                        } else {
-                                            gameModel.continueGame()
                                         }
                                     }
                             }
-                            
-                           
+                                                                                                            
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
@@ -162,10 +193,6 @@ struct CardAppear: View {
                             // Inicializa y reproduce el sonido de inicio
                             if(gameModel.options.soundEnabled){
                                 gameModel.soundModel = .init(soundName: "inicio", soundEnabled: gameModel.options.soundEnabled, initialSound: true, gameModel: gameModel)
-                                gameModel.soundModel?.playSound()
-                                
-                                
-                                
                             }
                             
                             // Inicia el temporizador después de reproducir el sonido
