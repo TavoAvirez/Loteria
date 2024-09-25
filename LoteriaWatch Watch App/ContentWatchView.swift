@@ -28,7 +28,7 @@ struct ContentView: View {
                 
                 VStack {
                     Text("Juego en Pausa")
-                        .font(.title)
+                        .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
                         .padding()
@@ -40,7 +40,7 @@ struct ContentView: View {
                         }
                     Text("Toca para continuar")
                         .foregroundColor(.white)
-                        .font(.title2)
+                        .font(.title3)
                     
                 }
             }
