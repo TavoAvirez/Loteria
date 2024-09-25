@@ -9,12 +9,17 @@ import Combine
 import SwiftUI
 import AVFoundation
 
+
 class GameModel: ObservableObject{
     @Published var options: GameOptions
-    init(options: GameOptions) {
-        self.options = options
-    }
+    
+    @Published var connectWatchModel: ConnectWatchModel
 
+    init(options: GameOptions, connectWatchModel: ConnectWatchModel) {
+           self.options = options
+           self.connectWatchModel = connectWatchModel
+       }
+       
     
     class GameOptions: ObservableObject {
         @Published var changeInterval: TimeInterval
@@ -105,7 +110,9 @@ class GameModel: ObservableObject{
           var formatType: String
           
           weak var gameModel: GameModel?
+          var audioPlayer: AVAudioPlayer?
 
+        
           init(soundName: String, soundEnabled: Bool, initialSound: Bool = false, gameModel: GameModel, formatType: String = "m4a") {
               self.soundName = soundName
               self.soundEnabled = soundEnabled
@@ -234,10 +241,13 @@ class GameModel: ObservableObject{
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 if let cartaAleatoria = self.randomElement(from: &self.loteriaCartasEnJuego) {
+                    
                     self.stopTimer()
                     self.stopTimerRectangle()
                     self.cardName = cartaAleatoria.nombre
                     self.cartasUsadas.append(cartaAleatoria) // Agregar carta usada
+                    
+                    self.connectWatchModel.sendCardNameToWatch(cardName: cartaAleatoria.nombre)
                     
                     // Mostrar la nueva carta
                     self.showImage = true
