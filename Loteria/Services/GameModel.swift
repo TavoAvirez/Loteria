@@ -12,12 +12,12 @@ import AVFoundation
 
 class GameModel: ObservableObject{
     @Published var options: GameOptions
-    @Published var connectToWatchModel: ConnectToWatchModel
+    @Published var connectToWatchModel = ConnectToWatchModel()
     
 
-    init(options: GameOptions, connectToWatchModel: ConnectToWatchModel) {
+    init(options: GameOptions) {
            self.options = options
-           self.connectToWatchModel = connectToWatchModel
+            setupConnectToWatchModel()
        }
        
     
@@ -30,6 +30,11 @@ class GameModel: ObservableObject{
             self.soundEnabled = soundEnabled
         }
     }
+    
+    func setupConnectToWatchModel() {
+        connectToWatchModel.setupWithGameModel(self)
+    }
+
     
     @Published var cartasUsadas: [Carta] = []
     @Published var gameStarted = false
@@ -291,22 +296,26 @@ class GameModel: ObservableObject{
     
     
     
-    func pauseGame() {
+    func pauseGame(messageFromWatch: Bool = false) {
         
         // Reproducir el sonido asociado
         self.soundModel = SoundModel(soundName: "pause1", soundEnabled: self.options.soundEnabled, gameModel: self, formatType: "mp3")
 
         gamePaused = true
         gameStarted = true
-        connectToWatchModel.pauseGameToWatch(gamePaused: true)
+        if !messageFromWatch {
+            connectToWatchModel.pauseGameToWatch(gamePaused: true)
+        }
         stopTimer() // Pausa el temporizador del juego
         stopTimerRectangle() // Pausa el progreso del rectángulo
     }
     
-    func continueGame() {
+    func continueGame(messageFromWatch: Bool = false) {
         // Reproducir el sonido asociado
         self.soundModel = SoundModel(soundName: "pause1", soundEnabled: self.options.soundEnabled, gameModel: self, formatType: "mp3")
-        connectToWatchModel.pauseGameToWatch(gamePaused: false)
+        if !messageFromWatch {
+            connectToWatchModel.pauseGameToWatch(gamePaused: false)
+        }
         if gamePaused {
             startTimer() // Continúa el temporizador del juego
 //            startTimerRectangle() // Continúa el progreso del rectángulo

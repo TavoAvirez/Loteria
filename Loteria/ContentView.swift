@@ -9,10 +9,9 @@ import AVFoundation
 import Combine
 
 struct ContentView: View {
-    // Inicializa el modelo del juego con opciones personalizadas usando @StateObject
-//    @StateObject private var connectWatchModel = ConnectToWatchModel()
+    // Inicializa el modelo del juego con opciones personalizadas usando @StateObject    
     @StateObject private var gameModel: GameModel
-
+    
     @State private var isVisible = true
 
     init() {
@@ -20,7 +19,7 @@ struct ContentView: View {
          let initialOptions = GameModel.GameOptions(changeInterval: 5, soundEnabled: true)
          
          // Inicializa el StateObject con el GameModel y las opciones
-         _gameModel = StateObject(wrappedValue: GameModel(options: initialOptions, connectToWatchModel: ConnectToWatchModel()))
+         _gameModel = StateObject(wrappedValue: GameModel(options: initialOptions))
      }
     
     var body: some View {

@@ -25,6 +25,12 @@ class ConnectToWatchModel: NSObject, ObservableObject, WCSessionDelegate {
                session?.activate()
            }
        }
+    
+
+    // Configura la relación con GameModel
+    func setupWithGameModel(_ gameModel: GameModel) {
+        self.gameModel = gameModel
+    }
 
     
     // Función para enviar el nombre de la carta al Apple Watch
@@ -91,13 +97,13 @@ class ConnectToWatchModel: NSObject, ObservableObject, WCSessionDelegate {
             switch command {
             case "pauseGame":
                 DispatchQueue.main.async {
-                    self.gameModel?.pauseGame()
+                    self.gameModel?.pauseGame(messageFromWatch: true)
                     replyHandler(["status": "gamePaused"])
                 }
             
             case "resumeGame":
                 DispatchQueue.main.async {
-                    self.gameModel?.continueGame()
+                    self.gameModel?.continueGame(messageFromWatch: true)
                     replyHandler(["status": "gameResumed"])
                 }
 
