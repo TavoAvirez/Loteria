@@ -71,6 +71,7 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
                 if let status = response["status"] as? String, status == "gamePaused" {
                     DispatchQueue.main.async {
                         self.gamePaused = true
+                        self.soundPlayer.playSound(named: "pause1", formatType: "mp3")
                         print("Juego pausado desde el Apple Watch.")
                     }
                 }
@@ -87,6 +88,7 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
                 if let status = response["status"] as? String, status == "gameResumed" {
                     DispatchQueue.main.async {
                         self.gamePaused = false
+                        self.soundPlayer.playSound(named: "pause1", formatType: "mp3")
                         print("Juego continuado desde el Apple Watch.")
                     }
                 }
