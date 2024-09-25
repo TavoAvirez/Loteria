@@ -11,8 +11,13 @@ import AVFoundation
 class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
     
     @Published var currentCard: String = "Sin carta" // Propiedad observada
-    @State private var soundPlayer = WatchSoundPlayer()
 
+    @Published var gamePaused: Bool = false
+
+    @State private var soundPlayer = WatchSoundPlayer()
+    
+
+    
     var session: WCSession?
     
     override init() {
@@ -28,14 +33,81 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
 
     // Método para manejar el contexto de la aplicación cuando se recibe desde el iPhone
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
-        if let cardName = applicationContext["currentCard"] as? String {
-            DispatchQueue.main.async {
-                self.currentCard = cardName
-                self.soundPlayer.playSound(named: cardName)
+        for (key, value) in applicationContext {
+            switch key {
+            case "currentCard":
+                if let cardName = value as? String {
+                    DispatchQueue.main.async {
+                        self.currentCard = cardName
+                        self.soundPlayer.playSound(named: cardName)
+                    }
+                }
+
+            case "gamePaused":
+                if let gamePaused = value as? Bool {
+                    DispatchQueue.main.async {
+                        self.gamePaused = gamePaused
+                        self.soundPlayer.playSound(named: "pause1", formatType: "mp3")
+                    }
+                }
                 
+            case "initialSound":
+                if let initialSound = value as? Bool {
+                    DispatchQueue.main.async {                        
+                        self.soundPlayer.playSound(named: "inicio")
+                    }
+                }
+
+            default:
+                print("Clave no reconocida: \(key)")
             }
         }
     }
+    
+    // Método para pausar el juego en el iPhone
+    func pauseGameOnPhone() {
+        if let session = session, session.isReachable {
+            session.sendMessage(["command": "pauseGame"], replyHandler: { response in
+                if let status = response["status"] as? String, status == "gamePaused" {
+                    DispatchQueue.main.async {
+                        self.gamePaused = true
+                        print("Juego pausado desde el Apple Watch.")
+                    }
+                }
+            }, errorHandler: { error in
+                print("Error enviando el comando de pausa: \(error.localizedDescription)")
+            })
+        }
+    }
+
+    // Método para continuar el juego en el iPhone
+    func unPauseGameOnPhone() {
+        if let session = session, session.isReachable {
+            session.sendMessage(["command": "resumeGame"], replyHandler: { response in
+                if let status = response["status"] as? String, status == "gameResumed" {
+                    DispatchQueue.main.async {
+                        self.gamePaused = false
+                        print("Juego continuado desde el Apple Watch.")
+                    }
+                }
+            }, errorHandler: { error in
+                print("Error enviando el comando de reanudación: \(error.localizedDescription)")
+            })
+        }
+    }
+    
+    
+    // Implementación de WCSessionDelegate para recibir mensajes desde el Watch
+    func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        if let command = message["command"] as? String, command == "pauseGame" {
+            // solo para cuando el comando sea pauseGame
+            DispatchQueue.main.async {
+//                self.gameModel?.pauseGame()
+                print("Comando recibido desde el Watch: \(command)")
+            }
+        }
+    }
+
 
     // Implementa los métodos obligatorios del delegado WCSession
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {

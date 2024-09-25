@@ -12,12 +12,12 @@ import AVFoundation
 
 class GameModel: ObservableObject{
     @Published var options: GameOptions
+    @Published var connectToWatchModel: ConnectToWatchModel
     
-    @Published var connectWatchModel: ConnectWatchModel
 
-    init(options: GameOptions, connectWatchModel: ConnectWatchModel) {
+    init(options: GameOptions, connectToWatchModel: ConnectToWatchModel) {
            self.options = options
-           self.connectWatchModel = connectWatchModel
+           self.connectToWatchModel = connectToWatchModel
        }
        
     
@@ -247,7 +247,7 @@ class GameModel: ObservableObject{
                     self.cardName = cartaAleatoria.nombre
                     self.cartasUsadas.append(cartaAleatoria) // Agregar carta usada
                     
-                    self.connectWatchModel.sendCardNameToWatch(cardName: cartaAleatoria.nombre)
+                    self.connectToWatchModel.sendCardNameToWatch(cardName: cartaAleatoria.nombre, gamePaused: self.gamePaused)
                     
                     // Mostrar la nueva carta
                     self.showImage = true
@@ -298,8 +298,7 @@ class GameModel: ObservableObject{
 
         gamePaused = true
         gameStarted = true
-        print("Juego pausado: \(gamePaused)")
-
+        connectToWatchModel.pauseGameToWatch(gamePaused: true)
         stopTimer() // Pausa el temporizador del juego
         stopTimerRectangle() // Pausa el progreso del rectángulo
     }
@@ -307,8 +306,7 @@ class GameModel: ObservableObject{
     func continueGame() {
         // Reproducir el sonido asociado
         self.soundModel = SoundModel(soundName: "pause1", soundEnabled: self.options.soundEnabled, gameModel: self, formatType: "mp3")
-
-        print("continue game " + String(describing: gamePaused))
+        connectToWatchModel.pauseGameToWatch(gamePaused: false)
         if gamePaused {
             startTimer() // Continúa el temporizador del juego
 //            startTimerRectangle() // Continúa el progreso del rectángulo

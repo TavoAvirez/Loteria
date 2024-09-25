@@ -10,7 +10,7 @@ import Combine
 
 struct ContentView: View {
     // Inicializa el modelo del juego con opciones personalizadas usando @StateObject
-    @StateObject private var connectWatchModel = ConnectWatchModel()
+//    @StateObject private var connectWatchModel = ConnectToWatchModel()
     @StateObject private var gameModel: GameModel
 
     @State private var isVisible = true
@@ -20,7 +20,7 @@ struct ContentView: View {
          let initialOptions = GameModel.GameOptions(changeInterval: 5, soundEnabled: true)
          
          // Inicializa el StateObject con el GameModel y las opciones
-         _gameModel = StateObject(wrappedValue: GameModel(options: initialOptions, connectWatchModel: ConnectWatchModel()))
+         _gameModel = StateObject(wrappedValue: GameModel(options: initialOptions, connectToWatchModel: ConnectToWatchModel()))
      }
     
     var body: some View {
