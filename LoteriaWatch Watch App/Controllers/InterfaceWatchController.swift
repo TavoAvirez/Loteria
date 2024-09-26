@@ -98,6 +98,17 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
     
+    // Método para cambiar de carta al deslizar
+    func changeCard() {
+        if let session = session, session.isReachable {
+            session.sendMessage(["command": "changeCard"], replyHandler: { response in
+                // Aquí puedes manejar cualquier respuesta que necesites
+            }, errorHandler: { error in
+                print("Error enviando el comando: \(error.localizedDescription)")
+            })
+        }
+    }
+    
     
     // Implementación de WCSessionDelegate para recibir mensajes desde el Watch
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {

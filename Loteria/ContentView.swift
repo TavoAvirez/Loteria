@@ -9,18 +9,18 @@ import AVFoundation
 import Combine
 
 struct ContentView: View {
-    // Inicializa el modelo del juego con opciones personalizadas usando @StateObject    
+    // Inicializa el modelo del juego con opciones personalizadas usando @StateObject
     @StateObject private var gameModel: GameModel
     
     @State private var isVisible = true
-
+    
     init() {
-         // Define las opciones iniciales
-         let initialOptions = GameModel.GameOptions(changeInterval: 5, soundEnabled: true)
-         
-         // Inicializa el StateObject con el GameModel y las opciones
-         _gameModel = StateObject(wrappedValue: GameModel(options: initialOptions))
-     }
+        // Define las opciones iniciales
+        let initialOptions = GameModel.GameOptions(changeInterval: 5, soundEnabled: true)
+        
+        // Inicializa el StateObject con el GameModel y las opciones
+        _gameModel = StateObject(wrappedValue: GameModel(options: initialOptions))
+    }
     
     var body: some View {
         ZStack {
@@ -52,11 +52,11 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .padding()
                         .opacity(isVisible ? 1 : 0)
-                                  .onAppear {
-                                      withAnimation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-                                          isVisible.toggle()
-                                      }
-                                  }
+                        .onAppear {
+                            withAnimation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                                isVisible.toggle()
+                            }
+                        }
                     Text("Toca para continuar")
                         .foregroundColor(.white)
                         .font(.title2)
@@ -154,7 +154,7 @@ struct CardAppear: View {
                             
                             // landscape
                             if geometry.size.width > geometry.size.height {
-                               
+                                
                                 Image(gameModel.cardName)
                                     .resizable()
                                     .scaledToFit()
@@ -165,7 +165,15 @@ struct CardAppear: View {
                                         if !gameModel.gamePaused {
                                             gameModel.pauseGame()
                                         }
-                                    }
+                                    }.gesture(
+                                        DragGesture()
+                                            .onEnded { value in
+                                                if value.translation.width < 0 {
+                                                    // Deslizar hacia la izquierda
+                                                    gameModel.changeCard()
+                                                }
+                                            }
+                                    )
                             } else {
                                 //portrait
                                 
@@ -179,9 +187,18 @@ struct CardAppear: View {
                                         if !gameModel.gamePaused {
                                             gameModel.pauseGame()
                                         }
-                                    }
+                                    }.gesture(
+                                        DragGesture()
+                                            .onEnded { value in
+                                                if value.translation.width < 0 {
+                                                    // Deslizar hacia la izquierda
+                                                    gameModel.changeCard()
+                                                }
+                                            }
+                                    )
+                                
                             }
-                                                                                                            
+                            
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }

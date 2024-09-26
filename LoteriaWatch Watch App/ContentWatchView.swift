@@ -63,7 +63,15 @@ struct ImageRenderView: View {
                 .transition(.slide)
                 .onTapGesture {
                     interfaceController.pauseGameOnPhone()
-                }
+                }.gesture(
+                    DragGesture()
+                        .onEnded { value in
+                            if value.translation.width < 0 {
+                                // Deslizar hacia la izquierda
+                                interfaceController.changeCard()
+                            }
+                        }
+                )
             
         } else {
             Text(interfaceController.currentCard)

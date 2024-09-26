@@ -106,6 +106,12 @@ class ConnectToWatchModel: NSObject, ObservableObject, WCSessionDelegate {
                     self.gameModel?.continueGame(messageFromWatch: true)
                     replyHandler(["status": "gameResumed"])
                 }
+            
+            case "changeCard":
+                DispatchQueue.main.async {
+                    self.gameModel?.changeCard()
+                    replyHandler(["status": "cardChanged"])
+                }
 
             default:
                 print("Comando desconocido: \(command)")
