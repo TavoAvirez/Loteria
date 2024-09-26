@@ -13,6 +13,14 @@ struct ContentView: View {
             // Contenido principal del juego
             VStack {
                 ImageRenderView(interfaceController: interfaceController)
+                if interfaceController.currentCard == "Sin carta" {
+                    Button(action: {
+                        interfaceController.startGame()
+                    }, label: {
+                        Text("Iniciar")
+                    })                    
+                }
+                
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(0)
@@ -44,6 +52,8 @@ struct ContentView: View {
                     
                 }
             }
+            
+            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

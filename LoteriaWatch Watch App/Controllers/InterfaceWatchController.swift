@@ -13,7 +13,8 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
     @Published var currentCard: String = "Sin carta" // Propiedad observada
 
     @Published var gamePaused: Bool = false
-
+    @Published var resetGame: Bool = false
+    
     @State private var soundPlayer = WatchSoundPlayer()
     
 
@@ -39,7 +40,11 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
                 if let cardName = value as? String {
                     DispatchQueue.main.async {
                         self.currentCard = cardName
-                        self.soundPlayer.playSound(named: cardName)
+                        self.soundPlayer.playSound(named: "deslizar1", formatType: "mp3")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.soundPlayer.playSound(named: cardName)
+                        }
+                        
                     }
                 }
 
@@ -55,6 +60,12 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
                 if let initialSound = value as? Bool {
                     DispatchQueue.main.async {                        
                         self.soundPlayer.playSound(named: "inicio")
+                    }
+                }
+            case "resetGame":
+                if let initialSound = value as? Bool {
+                    DispatchQueue.main.async {                        
+                        self.currentCard = "Sin carta"
                     }
                 }
 
@@ -102,6 +113,16 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
     func changeCard() {
         if let session = session, session.isReachable {
             session.sendMessage(["command": "changeCard"], replyHandler: { response in
+                // Aquí puedes manejar cualquier respuesta que necesites
+            }, errorHandler: { error in
+                print("Error enviando el comando: \(error.localizedDescription)")
+            })
+        }
+    }
+    // Metodo para iniciar el juego
+    func startGame() {
+        if let session = session, session.isReachable {
+            session.sendMessage(["command": "startGame"], replyHandler: { response in
                 // Aquí puedes manejar cualquier respuesta que necesites
             }, errorHandler: { error in
                 print("Error enviando el comando: \(error.localizedDescription)")

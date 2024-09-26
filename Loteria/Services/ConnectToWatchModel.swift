@@ -72,6 +72,18 @@ class ConnectToWatchModel: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
     
+    func resetGameToWatch() {
+        if let validSession = session, validSession.isPaired, validSession.isWatchAppInstalled {
+            let applicationContext = ["resetGame": true] as [String: Bool]
+            do {
+                try validSession.updateApplicationContext(applicationContext)
+            } catch {
+                print("Error enviando el contexto de la aplicación: \(error.localizedDescription)")
+
+            }
+        }
+    }
+    
 
         // Implementa los métodos obligatorios del delegado WCSession
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
@@ -111,6 +123,11 @@ class ConnectToWatchModel: NSObject, ObservableObject, WCSessionDelegate {
                 DispatchQueue.main.async {
                     self.gameModel?.changeCard()
                     replyHandler(["status": "cardChanged"])
+                }
+            case "startGame":
+                DispatchQueue.main.async {
+                    self.gameModel?.startGame()
+                    replyHandler(["status": "gameStarted"])
                 }
 
             default:

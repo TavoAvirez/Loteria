@@ -105,6 +105,7 @@
 				Sounds/Dylan/valiente.m4a,
 				Sounds/Dylan/venado.m4a,
 				Sounds/Dylan/violoncello.m4a,
+				"Sounds/Shared Sounds/deslizar1.mp3",
 				"Sounds/Shared Sounds/pause1.mp3",
 			);
 			target = C78EB2242CA36F38004CB580 /* LoteriaWatch Watch App */;

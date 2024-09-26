@@ -107,6 +107,7 @@ struct CardAppear: View {
                     if gameModel.gameStarted || gameModel.gamePaused || gameModel.cartasUsadas.count == 54{
                         Button(action: {
                             gameModel.resetGame()
+                            gameModel.connectToWatchModel.resetGameToWatch()
                         }) {
                             Image(systemName: "repeat")
                                 .frame(maxWidth: .infinity, maxHeight: 80)
@@ -204,15 +205,8 @@ struct CardAppear: View {
                     }
                     Spacer()
                     if !gameModel.gameStarted && !gameModel.showImage {
-                        Button(action: {
-                            
-                            // Inicializa y reproduce el sonido de inicio
-                            if(gameModel.options.soundEnabled){
-                                gameModel.soundModel = .init(soundName: "inicio", soundEnabled: gameModel.options.soundEnabled, initialSound: true, gameModel: gameModel)
-                            }
-                            
-                            // Inicia el temporizador después de reproducir el sonido
-                            gameModel.startTimer()
+                        Button(action: {                            
+                            gameModel.startGame()
                         }) {
                             Text("Iniciar")
                                 .padding()

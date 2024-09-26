@@ -260,20 +260,13 @@ class GameModel: ObservableObject{
                     // Reiniciar el progreso visual
                     self.progress = 0.0 // Reiniciar el progreso
                     self.startTimer() // Reiniciar el progreso visual aquí
-                    
+                    // sonido de transicion de carta
+                    self.soundModel = SoundModel(soundName: "deslizar1", soundEnabled: self.options.soundEnabled, gameModel: self, formatType: "mp3")
                     // Reproducir el sonido asociado
                     self.soundModel = SoundModel(soundName: self.cardName, soundEnabled: self.options.soundEnabled, gameModel: self)
 
                 }
                 else {
-//                    // Si no quedan cartas, muestra la última y reproduce el sonido
-//                    if let lastCard = self.cartasUsadas.last {
-//                        self.cardName = lastCard.nombre
-//                        self.showImage = true
-//                        
-//                        self.soundModel = SoundModel(soundName: self.cardName, soundEnabled: self.options.soundEnabled, gameModel: self)
-//                        self.soundModel?.playSound()
-//                    }
                     self.stopTimer() // Detén el temporizador
                 }
                 
@@ -320,6 +313,18 @@ class GameModel: ObservableObject{
             startTimer() // Continúa el temporizador del juego
 //            startTimerRectangle() // Continúa el progreso del rectángulo
         }
+    }
+    
+    func startGame() {
+        // Inicializa y reproduce el sonido de inicio
+        if(self.options.soundEnabled){
+            self.soundModel = .init(soundName: "inicio", soundEnabled: self.options.soundEnabled, initialSound: true, gameModel: self)
+            
+            self.connectToWatchModel.initialSoundToWatch()
+        }
+        
+        // Inicia el temporizador después de reproducir el sonido
+        self.startTimer()
     }
     
     // Otros métodos que manejen la lógica del juego...
