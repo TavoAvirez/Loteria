@@ -1,30 +1,54 @@
 import SwiftUI
 import WatchConnectivity
 
-
 struct ContentView: View {
     @StateObject private var interfaceController = InterfaceController()
     @StateObject private var soundPlayer = WatchSoundPlayer()
-    
+    @State private var isButtonRepeatDisabled = false // Variable de estado para controlar el estado del botón
+    @State private var isButtonStartDisabled = false // Variable de estado para controlar el estado del botón
+
     @State private var isVisible = true
     
     var body: some View {
         ZStack {
-            // Contenido principal del juego
+            
             VStack {
-                ImageRenderView(interfaceController: interfaceController)
+            // Imagen principal
+            ImageRenderView(interfaceController: interfaceController)
+            
+            
+                Spacer() // Empuja los botones hacia abajo
+                
+                // Botones que se muestran según la carta actual
                 if interfaceController.currentCard == "Sin carta" {
                     Button(action: {
+                        print("button presed")
                         interfaceController.startGame()
-                    }, label: {
-                        Text("Iniciar")
-                    })                    
+                        isButtonRepeatDisabled = false
+                        isButtonStartDisabled = true
+                    }) {
+                        Image(systemName: "play.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30) // Tamaño del ícono del botón
+                    }
+                    .buttonStyle(PlainButtonStyle()) // Evita el estilo predeterminado del botón
+                    .disabled(isButtonStartDisabled) // Deshabilita el botón si isButtonDisabled es true
+
+                } else {
+                    Button(action: {
+                        isButtonRepeatDisabled = true
+                        isButtonStartDisabled = false
+                        interfaceController.resetGame()
+                    }) {
+                        Image(systemName: "repeat.circle.fill")
+                            .resizable()
+                            .frame(width: 30, height: 30) // Tamaño del ícono del botón
+                    }
+                    .buttonStyle(PlainButtonStyle()) // Evita el estilo predeterminado del botón
+                    .disabled(isButtonRepeatDisabled) // Deshabilita el botón si isButtonDisabled es true
+
                 }
-                
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(0)
-            .background(.backgroundApp)
             
             // Pantalla de pausa superpuesta
             if interfaceController.gamePaused {
@@ -49,13 +73,12 @@ struct ContentView: View {
                     Text("Toca para continuar")
                         .foregroundColor(.white)
                         .font(.title3)
-                    
                 }
             }
-            
-            
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.backgroundApp)
+     
     }
 }
 
@@ -67,8 +90,7 @@ struct ImageRenderView: View {
         if interfaceController.currentCard != "Sin carta" {
             Image(interfaceController.currentCard)
                 .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity, maxHeight: 700)
+                .frame(maxWidth: 150, maxHeight: 300) // Imagen ocupa todo el espacio disponible
                 .padding(.horizontal, 8)
                 .transition(.slide)
                 .onTapGesture {
@@ -82,10 +104,8 @@ struct ImageRenderView: View {
                             }
                         }
                 )
-            
         } else {
             Text(interfaceController.currentCard)
         }
-        
     }
 }

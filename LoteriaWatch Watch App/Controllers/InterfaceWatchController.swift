@@ -11,13 +11,13 @@ import AVFoundation
 class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
     
     @Published var currentCard: String = "Sin carta" // Propiedad observada
-
+    
     @Published var gamePaused: Bool = false
-    @Published var resetGame: Bool = false
+    @Published var gameReseted: Bool = false
     
     @State private var soundPlayer = WatchSoundPlayer()
     
-
+    
     
     var session: WCSession?
     
@@ -31,7 +31,7 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
             session?.activate()
         }
     }
-
+    
     // Método para manejar el contexto de la aplicación cuando se recibe desde el iPhone
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
         for (key, value) in applicationContext {
@@ -47,7 +47,7 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
                         
                     }
                 }
-
+                
             case "gamePaused":
                 if let gamePaused = value as? Bool {
                     DispatchQueue.main.async {
@@ -58,17 +58,17 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
                 
             case "initialSound":
                 if let initialSound = value as? Bool {
-                    DispatchQueue.main.async {                        
+                    DispatchQueue.main.async {
                         self.soundPlayer.playSound(named: "inicio")
                     }
                 }
             case "resetGame":
                 if let initialSound = value as? Bool {
-                    DispatchQueue.main.async {                        
+                    DispatchQueue.main.async {
                         self.currentCard = "Sin carta"
                     }
                 }
-
+                
             default:
                 print("Clave no reconocida: \(key)")
             }
@@ -91,7 +91,7 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
             })
         }
     }
-
+    
     // Método para continuar el juego en el iPhone
     func unPauseGameOnPhone() {
         if let session = session, session.isReachable {
@@ -130,19 +130,35 @@ class InterfaceController: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
     
+    // Metodo para reiniciar el juego
+    func resetGame() {
+        if let session = session, session.isReachable {
+            session.sendMessage(["command": "resetGame"], replyHandler: { response in
+                
+                // Asegurarse de que las actualizaciones ocurran en el hilo principal
+                DispatchQueue.main.async {
+                    self.gameReseted = true
+                    self.currentCard = "Sin carta"
+                }
+            }, errorHandler: { error in
+                print("Error enviando el comando: \(error.localizedDescription)")
+            })
+        }
+    }
+    
     
     // Implementación de WCSessionDelegate para recibir mensajes desde el Watch
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         if let command = message["command"] as? String, command == "pauseGame" {
             // solo para cuando el comando sea pauseGame
             DispatchQueue.main.async {
-//                self.gameModel?.pauseGame()
+                //                self.gameModel?.pauseGame()
                 print("Comando recibido desde el Watch: \(command)")
             }
         }
     }
-
-
+    
+    
     // Implementa los métodos obligatorios del delegado WCSession
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {

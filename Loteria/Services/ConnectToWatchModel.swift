@@ -129,6 +129,11 @@ class ConnectToWatchModel: NSObject, ObservableObject, WCSessionDelegate {
                     self.gameModel?.startGame()
                     replyHandler(["status": "gameStarted"])
                 }
+            case "resetGame":
+                DispatchQueue.main.async {
+                    self.gameModel?.resetGame()
+                    replyHandler(["status": "gameReseted"])
+                }
 
             default:
                 print("Comando desconocido: \(command)")
