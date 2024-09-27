@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct LoteriaApp: App {
+    @State var showTutorial = true
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if showTutorial {
+                TutorialView(showTutorial: $showTutorial)
+            } else {
+                ContentView()
+            }
         }
     }
 }

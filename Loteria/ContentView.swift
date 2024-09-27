@@ -210,6 +210,7 @@ struct CardAppear: View {
                         }) {
                             Text("Iniciar")
                                 .padding()
+                                .frame(maxWidth: .infinity)
                                 .background(.backgroundStartButton)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
@@ -220,6 +221,7 @@ struct CardAppear: View {
                         }) {
                             Text("Siguiente")
                                 .padding()
+                                .frame(maxWidth: .infinity)
                                 .background(.backgroundResetButton)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
