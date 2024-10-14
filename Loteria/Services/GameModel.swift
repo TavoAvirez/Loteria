@@ -15,21 +15,11 @@ class GameModel: ObservableObject{
     @Published var connectToWatchModel = ConnectToWatchModel()
     
 
-    init(options: GameOptions) {
-           self.options = options
-            setupConnectToWatchModel()
-       }
-       
-    
-    class GameOptions: ObservableObject {
-        @Published var changeInterval: TimeInterval
-        @Published var soundEnabled: Bool
-
-        init(changeInterval: TimeInterval, soundEnabled: Bool) {
-            self.changeInterval = changeInterval
-            self.soundEnabled = soundEnabled
-        }
-    }
+    init() {
+        
+        self.options = GameOptions.loadFromUserDefaults()
+        setupConnectToWatchModel()
+       }               
     
     func setupConnectToWatchModel() {
         connectToWatchModel.setupWithGameModel(self)

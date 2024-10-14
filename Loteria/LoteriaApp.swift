@@ -9,11 +9,12 @@ import SwiftUI
 
 @main
 struct LoteriaApp: App {
-    @State var showTutorial = true
+    @StateObject var gameModel = GameModel()
+
     var body: some Scene {
         WindowGroup {
-            if showTutorial {
-                TutorialView(showTutorial: $showTutorial)
+            if gameModel.options.enableTutorial {
+                TutorialView(showTutorial: $gameModel.options.enableTutorial, gameOptions: gameModel.options)
             } else {
                 ContentView()
             }

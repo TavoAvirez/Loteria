@@ -7,14 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C78EB2322CA36F3A004CB580 /* LoteriaWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = C78EB2252CA36F38004CB580 /* LoteriaWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C7623D8E2CB5BD1F00A2CF24 /* LoteriaWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = C7623CB82CB5BD0E00A2CF24 /* LoteriaWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C78EB23B2CA39AC9004CB580 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C78EB23A2CA39AC9004CB580 /* WatchConnectivity.framework */; };
 		C78EB23D2CA39BAE004CB580 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C78EB23C2CA39BAE004CB580 /* WatchConnectivity.framework */; };
-		C78EB24A2CA3A47C004CB580 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C78EB2492CA3A47C004CB580 /* AVFoundation.framework */; };
+		C7D88AB92CB5B71600AC7F4D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C78EB2492CA3A47C004CB580 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C78EB2302CA36F3A004CB580 /* PBXContainerItemProxy */ = {
+		C7623A342CB5BB9300A2CF24 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C72B4D2E2C9CFF2F0055E0DD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C78EB2242CA36F38004CB580;
+			remoteInfo = "LoteriaWatch Watch App";
+		};
+		C7623D8F2CB5BD1F00A2CF24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C72B4D2E2C9CFF2F0055E0DD /* Project object */;
 			proxyType = 1;
@@ -30,7 +37,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				C78EB2322CA36F3A004CB580 /* LoteriaWatch Watch App.app in Embed Watch Content */,
+				C7623D8E2CB5BD1F00A2CF24 /* LoteriaWatch Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -39,17 +46,25 @@
 
 /* Begin PBXFileReference section */
 		C72B4D362C9CFF2F0055E0DD /* Loteria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Loteria.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C78EB2252CA36F38004CB580 /* LoteriaWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LoteriaWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7623CB82CB5BD0E00A2CF24 /* LoteriaWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LoteriaWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C78EB23A2CA39AC9004CB580 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 		C78EB23C2CA39BAE004CB580 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
 		C78EB2492CA3A47C004CB580 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C717C5542CBDBB9500A8FF39 /* Exceptions for "LoteriaWatch Watch App" folder in "Loteria" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Services/UserDefaultsHelper.swift,
+			);
+			target = C72B4D352C9CFF2F0055E0DD /* Loteria */;
+		};
 		C78EB23F2CA39FF7004CB580 /* Exceptions for "Loteria" folder in "LoteriaWatch Watch App" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Assets.xcassets,
+				Services/GameOptions.swift,
 				Sounds/Dylan/alacran.m4a,
 				Sounds/Dylan/apache.m4a,
 				Sounds/Dylan/arana.m4a,
@@ -123,6 +138,9 @@
 		};
 		C78EB2262CA36F38004CB580 /* LoteriaWatch Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C717C5542CBDBB9500A8FF39 /* Exceptions for "LoteriaWatch Watch App" folder in "Loteria" target */,
+			);
 			path = "LoteriaWatch Watch App";
 			sourceTree = "<group>";
 		};
@@ -141,7 +159,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C78EB24A2CA3A47C004CB580 /* AVFoundation.framework in Frameworks */,
+				C7D88AB92CB5B71600AC7F4D /* AVFoundation.framework in Frameworks */,
 				C78EB23B2CA39AC9004CB580 /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -163,7 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				C72B4D362C9CFF2F0055E0DD /* Loteria.app */,
-				C78EB2252CA36F38004CB580 /* LoteriaWatch Watch App.app */,
+				C7623CB82CB5BD0E00A2CF24 /* LoteriaWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -193,7 +211,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				C78EB2312CA36F3A004CB580 /* PBXTargetDependency */,
+				C7623A352CB5BB9300A2CF24 /* PBXTargetDependency */,
+				C7623D902CB5BD1F00A2CF24 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				C72B4D382C9CFF2F0055E0DD /* Loteria */,
@@ -224,7 +243,7 @@
 			packageProductDependencies = (
 			);
 			productName = "LoteriaWatch Watch App";
-			productReference = C78EB2252CA36F38004CB580 /* LoteriaWatch Watch App.app */;
+			productReference = C7623CB82CB5BD0E00A2CF24 /* LoteriaWatch Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -300,10 +319,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C78EB2312CA36F3A004CB580 /* PBXTargetDependency */ = {
+		C7623A352CB5BB9300A2CF24 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C78EB2242CA36F38004CB580 /* LoteriaWatch Watch App */;
-			targetProxy = C78EB2302CA36F3A004CB580 /* PBXContainerItemProxy */;
+			targetProxy = C7623A342CB5BB9300A2CF24 /* PBXContainerItemProxy */;
+		};
+		C7623D902CB5BD1F00A2CF24 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C78EB2242CA36F38004CB580 /* LoteriaWatch Watch App */;
+			targetProxy = C7623D8F2CB5BD1F00A2CF24 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -432,13 +456,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Loteria/Preview Content\"";
-				DEVELOPMENT_TEAM = 5D9DY5M3LS;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 5D9DY5M3LS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -449,8 +477,14 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Tavo-Avirez.Loteria";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tavoavirez.loteria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Loteria Dev Profile";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -462,12 +496,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Loteria/Preview Content\"";
-				DEVELOPMENT_TEAM = 5D9DY5M3LS;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 5D9DY5M3LS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -478,8 +516,14 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Tavo-Avirez.Loteria";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tavoavirez.loteria;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Loteria Distribution Profile";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -491,23 +535,28 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"LoteriaWatch Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = 5D9DY5M3LS;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=watchos*]" = 5D9DY5M3LS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = LoteriaWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Tavo-Avirez.Loteria";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.tavoavirez.loteria;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Tavo-Avirez.Loteria.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tavoavirez.loteria.watchapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "Loteria WatchApp Dev Profile";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -522,22 +571,27 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LoteriaWatch Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = 5D9DY5M3LS;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=watchos*]" = 5D9DY5M3LS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = LoteriaWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Tavo-Avirez.Loteria";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.tavoavirez.loteria;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Tavo-Avirez.Loteria.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tavoavirez.loteria.watchapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=watchos*]" = "Loteria Watch Distribution Profile";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;

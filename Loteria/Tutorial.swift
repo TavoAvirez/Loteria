@@ -21,6 +21,7 @@ class TutorialViewModel: ObservableObject {
 struct TutorialView: View {
     @Binding var showTutorial: Bool // Este valor controla si se muestra el tutorial
     @StateObject private var viewModel = TutorialViewModel() // Instancia del ViewModel
+    @ObservedObject var gameOptions: GameOptions // Referencia a las opciones del juego
 
     var body: some View {
         VStack {
@@ -576,13 +577,13 @@ struct TutorialsEnd: View {
 }
 
 // Vista previa
-struct TutorialView_Previews: PreviewProvider {
-    static var previews: some View {
-        @State var showTutorial: Bool = true
-        TutorialView(showTutorial: $showTutorial)
-    }
-}
-#Preview {
-    @Previewable @State var showTutorial: Bool = true
-    TutorialView(showTutorial: $showTutorial)
-}
+//struct TutorialView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        @State var showTutorial: Bool = true
+//        TutorialView(showTutorial: $showTutorial)
+//    }
+//}
+//#Preview {
+//    @Previewable @State var showTutorial: Bool = true
+//    TutorialView(showTutorial: $showTutorial)
+//}

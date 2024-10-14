@@ -10,17 +10,10 @@ import Combine
 
 struct ContentView: View {
     // Inicializa el modelo del juego con opciones personalizadas usando @StateObject
-    @StateObject private var gameModel: GameModel
-    
+    @StateObject private var gameModel = GameModel()
     @State private var isVisible = true
     
-    init() {
-        // Define las opciones iniciales
-        let initialOptions = GameModel.GameOptions(changeInterval: 5, soundEnabled: true)
-        
-        // Inicializa el StateObject con el GameModel y las opciones
-        _gameModel = StateObject(wrappedValue: GameModel(options: initialOptions))
-    }
+    
     
     var body: some View {
         ZStack {
@@ -32,37 +25,41 @@ struct ContentView: View {
                 
                 // Binding para actualizar las cartas usadas
                 CardAppear(gameModel: gameModel)
+                    .overlay(
+                        // Solo superponer el ícono de pausa sobre la vista de cartas
+                        gameModel.gamePaused ? PauseOverlay(gameModel: gameModel) : nil
+                    ).frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(0)
             .background(.backgroundApp)
             
-            // Pantalla de pausa superpuesta
-            if gameModel.gamePaused {
-                Color.black.opacity(0.6) // Cubre la pantalla con un fondo semitransparente
-                    .ignoresSafeArea() // Asegura que cubra toda la pantalla
-                    .onTapGesture {
-                        gameModel.continueGame() // Al tocar, continua el juego
-                    }
-                
-                VStack {
-                    Text("Juego en Pausa")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding()
-                        .opacity(isVisible ? 1 : 0)
-                        .onAppear {
-                            withAnimation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-                                isVisible.toggle()
-                            }
-                        }
-                    Text("Toca para continuar")
-                        .foregroundColor(.white)
-                        .font(.title2)
-                    
-                }
-            }
+            //            // Pantalla de pausa superpuesta
+            //            if gameModel.gamePaused {
+            //                Color.black.opacity(0.6) // Cubre la pantalla con un fondo semitransparente
+            //                    .ignoresSafeArea() // Asegura que cubra toda la pantalla
+            //                    .onTapGesture {
+            //                        gameModel.continueGame() // Al tocar, continua el juego
+            //                    }
+            //
+            //                VStack {
+            //                    Text("Juego en Pausa")
+            //                        .font(.largeTitle)
+            //                        .fontWeight(.bold)
+            //                        .foregroundColor(.white)
+            //                        .padding()
+            //                        .opacity(isVisible ? 1 : 0)
+            //                        .onAppear {
+            //                            withAnimation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+            //                                isVisible.toggle()
+            //                            }
+            //                        }
+            //                    Text("Toca para continuar")
+            //                        .foregroundColor(.white)
+            //                        .font(.title2)
+            //
+            //                }
+            //            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -109,12 +106,23 @@ struct CardAppear: View {
                             gameModel.resetGame()
                             gameModel.connectToWatchModel.resetGameToWatch()
                         }) {
-                            Image(systemName: "repeat")
-                                .frame(maxWidth: .infinity, maxHeight: 80)
-                                .font(.largeTitle)
-                                .background(Color.blue)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
+                            ZStack(alignment: .bottomTrailing) {
+                                Image(systemName: "repeat")
+                                    .frame(maxWidth: .infinity, maxHeight: 80)
+                                    .font(.largeTitle)
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                                  
+                                Text("\(gameModel.loteriaCartasEnJuego.count)")
+                                              .font(.caption) // Tamaño pequeño
+                                              .padding(5) // Padding alrededor del texto
+                                              .background(Color.black)
+                                              .foregroundColor(.white)
+                                              .clipShape(Circle()) // Forma circular
+                                              .offset(x: 0, y: -10) // Desplazar hacia la esquina inferior derecha
+
+                            }
                         }
                     }
                 }
@@ -205,7 +213,7 @@ struct CardAppear: View {
                     }
                     Spacer()
                     if !gameModel.gameStarted && !gameModel.showImage {
-                        Button(action: {                            
+                        Button(action: {
                             gameModel.startGame()
                         }) {
                             Text("Iniciar")
@@ -294,7 +302,7 @@ struct UsedCards: View {
             }
         }
         
-        //        Text("Cartas restantes: \(gameModel.loteriaCartasEnJuego.count)")
+//                Text("Cartas restantes: \(gameModel.loteriaCartasEnJuego.count)")
         //        Text("Cartas usadas: \(gameModel.cartasUsadas.count)")
         //        Text("segundos: \(gameModel.options.changeInterval)")
     }
@@ -350,6 +358,10 @@ struct OptionsModal: View {
                 Section(header: Text("Sonido")) {
                     Toggle("Sonido Activado", isOn: $gameModel.options.soundEnabled)
                 }
+                // Switch para habilitar/deshabilitar el tutorial
+                Section(header: Text("Sonido")) {
+                    Toggle("Habilitar Tutorial", isOn: $gameModel.options.enableTutorial)
+                }
             }
             .navigationTitle("Opciones del Juego")
             .toolbar {
@@ -360,6 +372,51 @@ struct OptionsModal: View {
                         Text("Cerrar")
                     }
                 }
+            }
+        }
+    }
+}
+
+struct PauseOverlay: View {
+    @ObservedObject var gameModel: GameModel
+    @State private var isVisible = true
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Fondo semitransparente que cubre toda la pantalla
+//                Color.black.opacity(0.6)
+                    
+
+                // Contenido centrado
+                VStack {
+                    Text("Pausa")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding()
+                        .opacity(isVisible ? 1 : 0)
+                        .onAppear {
+                            withAnimation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                                isVisible.toggle()
+                            }
+                        }
+
+                    Text("Toca para continuar")
+                        .foregroundColor(.white)
+                        .font(.title3)
+                }
+                .padding()
+                .background(Color.gray.opacity(0.9)) // Fondo de la tarjeta con opacidad
+                .cornerRadius(20)
+                .frame(maxWidth: geometry.size.width * 0.6, maxHeight: geometry.size.height * 0.3) // Tamaño del overlay
+
+            }
+            .frame(maxWidth: geometry.size.width * 1, maxHeight: geometry.size.height * 0.6)
+            .padding(.horizontal, geometry.size.width * 0.23)
+            .padding(.vertical, geometry.size.height * 0.2)
+            .onTapGesture {
+                gameModel.continueGame() // Reanudar el juego al tocar
             }
         }
     }
