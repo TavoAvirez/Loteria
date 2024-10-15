@@ -8,7 +8,6 @@
 import Foundation
 import Combine
 
-
 class GameOptions: ObservableObject {
     @Published var changeInterval: TimeInterval {
         didSet {
@@ -28,10 +27,17 @@ class GameOptions: ObservableObject {
         }
     }
     
-    init(changeInterval: TimeInterval, soundEnabled: Bool, enableTutorial: Bool) {
+    @Published var queueSounds: Bool { // Nueva opción para encolar sonidos
+        didSet {
+            saveToUserDefaults()
+        }
+    }
+    
+    init(changeInterval: TimeInterval, soundEnabled: Bool, enableTutorial: Bool, queueSounds: Bool) {
         self.changeInterval = changeInterval
         self.soundEnabled = soundEnabled
         self.enableTutorial = enableTutorial
+        self.queueSounds = queueSounds
         saveToUserDefaults()
     }
 
@@ -41,6 +47,7 @@ class GameOptions: ObservableObject {
         defaults.set(changeInterval, forKey: "changeInterval")
         defaults.set(soundEnabled, forKey: "soundEnabled")
         defaults.set(enableTutorial, forKey: "enableTutorial")
+        defaults.set(queueSounds, forKey: "queueSounds") // Guardar la opción de encolar sonidos
     }
 
     // Cargar las opciones desde UserDefaults
@@ -49,6 +56,7 @@ class GameOptions: ObservableObject {
         let changeInterval = defaults.double(forKey: "changeInterval") != 0 ? defaults.double(forKey: "changeInterval") : 3.0
         let soundEnabled = defaults.bool(forKey: "soundEnabled")
         let enableTutorial = defaults.bool(forKey: "enableTutorial")
-        return GameOptions(changeInterval: changeInterval, soundEnabled: soundEnabled, enableTutorial: enableTutorial)
+        let queueSounds = defaults.bool(forKey: "queueSounds") // Cargar la opción de encolar sonidos
+        return GameOptions(changeInterval: changeInterval, soundEnabled: soundEnabled, enableTutorial: enableTutorial, queueSounds: queueSounds)
     }
 }

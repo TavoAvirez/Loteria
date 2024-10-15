@@ -23,43 +23,19 @@ struct ContentView: View {
                 UsedCards(gameModel: gameModel)
                 Spacer()
                 
+                
                 // Binding para actualizar las cartas usadas
                 CardAppear(gameModel: gameModel)
                     .overlay(
                         // Solo superponer el ícono de pausa sobre la vista de cartas
                         gameModel.gamePaused ? PauseOverlay(gameModel: gameModel) : nil
                     ).frame(maxWidth: .infinity, maxHeight: .infinity)
+                BannerAd().frame(height: 50) // Altura para el banner
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(0)
             .background(.backgroundApp)
             
-            //            // Pantalla de pausa superpuesta
-            //            if gameModel.gamePaused {
-            //                Color.black.opacity(0.6) // Cubre la pantalla con un fondo semitransparente
-            //                    .ignoresSafeArea() // Asegura que cubra toda la pantalla
-            //                    .onTapGesture {
-            //                        gameModel.continueGame() // Al tocar, continua el juego
-            //                    }
-            //
-            //                VStack {
-            //                    Text("Juego en Pausa")
-            //                        .font(.largeTitle)
-            //                        .fontWeight(.bold)
-            //                        .foregroundColor(.white)
-            //                        .padding()
-            //                        .opacity(isVisible ? 1 : 0)
-            //                        .onAppear {
-            //                            withAnimation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-            //                                isVisible.toggle()
-            //                            }
-            //                        }
-            //                    Text("Toca para continuar")
-            //                        .foregroundColor(.white)
-            //                        .font(.title2)
-            //
-            //                }
-            //            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -113,15 +89,15 @@ struct CardAppear: View {
                                     .background(Color.blue)
                                     .foregroundColor(.white)
                                     .cornerRadius(10)
-                                  
+                                
                                 Text("\(gameModel.loteriaCartasEnJuego.count)")
-                                              .font(.caption) // Tamaño pequeño
-                                              .padding(5) // Padding alrededor del texto
-                                              .background(Color.black)
-                                              .foregroundColor(.white)
-                                              .clipShape(Circle()) // Forma circular
-                                              .offset(x: 0, y: -10) // Desplazar hacia la esquina inferior derecha
-
+                                    .font(.caption) // Tamaño pequeño
+                                    .padding(5) // Padding alrededor del texto
+                                    .background(Color.black)
+                                    .foregroundColor(.white)
+                                    .clipShape(Circle()) // Forma circular
+                                    .offset(x: 0, y: -10) // Desplazar hacia la esquina inferior derecha
+                                
                             }
                         }
                     }
@@ -152,7 +128,7 @@ struct CardAppear: View {
                                 // iPhone X, iPhone 12/13/14, etc.
                             } else if screenHeight >= 812 {
                                 progressRectangule()
-                                    .frame(height: 350)
+                                    .frame(height: 365)
                             } else {
                                 progressRectangule()
                                     .frame(height: 150)
@@ -302,7 +278,7 @@ struct UsedCards: View {
             }
         }
         
-//                Text("Cartas restantes: \(gameModel.loteriaCartasEnJuego.count)")
+        //                Text("Cartas restantes: \(gameModel.loteriaCartasEnJuego.count)")
         //        Text("Cartas usadas: \(gameModel.cartasUsadas.count)")
         //        Text("segundos: \(gameModel.options.changeInterval)")
     }
@@ -336,6 +312,7 @@ struct OptionsModal: View {
     @ObservedObject var gameModel: GameModel // Observa el modelo de juego
     
     @Environment(\.dismiss) var dismiss // Permite cerrar la vista modal
+    @State private var showHelpQueueSounds = false // Variable que controla la visibilidad del popover
     
     var body: some View {
         NavigationView {
@@ -362,6 +339,33 @@ struct OptionsModal: View {
                 Section(header: Text("Sonido")) {
                     Toggle("Habilitar Tutorial", isOn: $gameModel.options.enableTutorial)
                 }
+                Section(header: Text("Encolar Sonidos")) {
+                    HStack {
+                        Image(systemName: "questionmark.circle.fill")
+                            .foregroundColor(.blue)
+                            .onTapGesture {
+                                showHelpQueueSounds.toggle()  // Muestra el popover
+                            }
+                            .popover(isPresented: $showHelpQueueSounds, arrowEdge: .trailing) {
+                                VStack(alignment: .leading) {
+                                    Text("¿Qué es el encolado de sonidos?")
+                                        .font(.headline)
+                                        .foregroundColor(.black)
+                                        .padding(.bottom, 5)
+
+                                    Text("Activar esta opción hará que los sonidos se encolen y se reproduzcan uno tras otro. Si desactivas esta opción, los sonidos se reproducirán de inmediato sin esperar a que terminen los anteriores.")
+                                        .font(.body)
+                                        .foregroundColor(.black)
+                                        .multilineTextAlignment(.leading)
+                                        .padding()
+                                }
+                            }
+
+                        Toggle("Activado", isOn: $gameModel.options.queueSounds)  // Simulando el toggle para probar
+                    }
+                }
+                
+
             }
             .navigationTitle("Opciones del Juego")
             .toolbar {
@@ -377,17 +381,30 @@ struct OptionsModal: View {
     }
 }
 
+struct HelpTooltip: View {
+    var body: some View {
+        Text("Cuando está activado, los sonidos se encolan y se reproducen uno tras otro. Si está desactivado, los sonidos se reproducen inmediatamente.")
+            .font(.body)
+            .padding()
+            .frame(maxWidth: 250) // Limitar el ancho para que no se corte
+            .background(Color.gray.opacity(0.9))
+            .cornerRadius(10)
+            .shadow(radius: 5)
+            .multilineTextAlignment(.center) // Para que el texto se alinee correctamente
+    }
+}
+
 struct PauseOverlay: View {
     @ObservedObject var gameModel: GameModel
     @State private var isVisible = true
-
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {
                 // Fondo semitransparente que cubre toda la pantalla
-//                Color.black.opacity(0.6)
-                    
-
+                //                Color.black.opacity(0.6)
+                
+                
                 // Contenido centrado
                 VStack {
                     Text("Pausa")
@@ -401,7 +418,7 @@ struct PauseOverlay: View {
                                 isVisible.toggle()
                             }
                         }
-
+                    
                     Text("Toca para continuar")
                         .foregroundColor(.white)
                         .font(.title3)
@@ -410,7 +427,7 @@ struct PauseOverlay: View {
                 .background(Color.gray.opacity(0.9)) // Fondo de la tarjeta con opacidad
                 .cornerRadius(20)
                 .frame(maxWidth: geometry.size.width * 0.6, maxHeight: geometry.size.height * 0.3) // Tamaño del overlay
-
+                
             }
             .frame(maxWidth: geometry.size.width * 1, maxHeight: geometry.size.height * 0.6)
             .padding(.horizontal, geometry.size.width * 0.23)
@@ -422,6 +439,6 @@ struct PauseOverlay: View {
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView()
+//}
