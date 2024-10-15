@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C717C5672CBE05D400A8FF39 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = C717C5662CBE05D400A8FF39 /* GoogleMobileAds */; };
 		C7623D8E2CB5BD1F00A2CF24 /* LoteriaWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = C7623CB82CB5BD0E00A2CF24 /* LoteriaWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C78EB23B2CA39AC9004CB580 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C78EB23A2CA39AC9004CB580 /* WatchConnectivity.framework */; };
 		C78EB23D2CA39BAE004CB580 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C78EB23C2CA39BAE004CB580 /* WatchConnectivity.framework */; };
@@ -15,13 +16,6 @@
 
 /* Begin PBXContainerItemProxy section */
 		C7623A342CB5BB9300A2CF24 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C72B4D2E2C9CFF2F0055E0DD /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C78EB2242CA36F38004CB580;
-			remoteInfo = "LoteriaWatch Watch App";
-		};
-		C7623D8F2CB5BD1F00A2CF24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C72B4D2E2C9CFF2F0055E0DD /* Project object */;
 			proxyType = 1;
@@ -57,6 +51,13 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Services/UserDefaultsHelper.swift,
+			);
+			target = C72B4D352C9CFF2F0055E0DD /* Loteria */;
+		};
+		C717C55D2CBDE8BE00A8FF39 /* Exceptions for "Loteria" folder in "Loteria" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
 			);
 			target = C72B4D352C9CFF2F0055E0DD /* Loteria */;
 		};
@@ -131,6 +132,7 @@
 		C72B4D382C9CFF2F0055E0DD /* Loteria */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				C717C55D2CBDE8BE00A8FF39 /* Exceptions for "Loteria" folder in "Loteria" target */,
 				C78EB23F2CA39FF7004CB580 /* Exceptions for "Loteria" folder in "LoteriaWatch Watch App" target */,
 			);
 			path = Loteria;
@@ -151,6 +153,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C717C5672CBE05D400A8FF39 /* GoogleMobileAds in Frameworks */,
 				C78EB23D2CA39BAE004CB580 /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -212,13 +215,13 @@
 			);
 			dependencies = (
 				C7623A352CB5BB9300A2CF24 /* PBXTargetDependency */,
-				C7623D902CB5BD1F00A2CF24 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				C72B4D382C9CFF2F0055E0DD /* Loteria */,
 			);
 			name = Loteria;
 			packageProductDependencies = (
+				C717C5662CBE05D400A8FF39 /* GoogleMobileAds */,
 			);
 			productName = Loteria;
 			productReference = C72B4D362C9CFF2F0055E0DD /* Loteria.app */;
@@ -265,14 +268,17 @@
 				};
 			};
 			buildConfigurationList = C72B4D312C9CFF2F0055E0DD /* Build configuration list for PBXProject "Loteria" */;
-			developmentRegion = en;
+			developmentRegion = "es-419";
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				"es-419",
 			);
 			mainGroup = C72B4D2D2C9CFF2F0055E0DD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C717C5652CBE05D400A8FF39 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C72B4D372C9CFF2F0055E0DD /* Products */;
 			projectDirPath = "";
@@ -323,11 +329,6 @@
 			isa = PBXTargetDependency;
 			target = C78EB2242CA36F38004CB580 /* LoteriaWatch Watch App */;
 			targetProxy = C7623A342CB5BB9300A2CF24 /* PBXContainerItemProxy */;
-		};
-		C7623D902CB5BD1F00A2CF24 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C78EB2242CA36F38004CB580 /* LoteriaWatch Watch App */;
-			targetProxy = C7623D8F2CB5BD1F00A2CF24 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -466,6 +467,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 5D9DY5M3LS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Loteria/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -505,6 +507,7 @@
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 5D9DY5M3LS;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Loteria/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -632,6 +635,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C717C5652CBE05D400A8FF39 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C717C5662CBE05D400A8FF39 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C717C5652CBE05D400A8FF39 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C72B4D2E2C9CFF2F0055E0DD /* Project object */;
 }
