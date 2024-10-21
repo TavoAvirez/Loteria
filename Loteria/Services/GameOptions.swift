@@ -53,10 +53,10 @@ class GameOptions: ObservableObject {
     // Cargar las opciones desde UserDefaults
     static func loadFromUserDefaults() -> GameOptions {
         let defaults = UserDefaults.standard
-        let changeInterval = defaults.double(forKey: "changeInterval") != 0 ? defaults.double(forKey: "changeInterval") : 3.0
-        let soundEnabled = defaults.bool(forKey: "soundEnabled")
-        let enableTutorial = defaults.bool(forKey: "enableTutorial")
-        let queueSounds = defaults.bool(forKey: "queueSounds") // Cargar la opción de encolar sonidos
+        let changeInterval = defaults.double(forKey: "changeInterval") != 0 ? defaults.double(forKey: "changeInterval") : 5.0
+        let soundEnabled = defaults.object(forKey: "soundEnabled") != nil ? defaults.bool(forKey: "soundEnabled") : true
+        let enableTutorial = defaults.object(forKey: "enableTutorial") != nil ? defaults.bool(forKey: "enableTutorial") : true
+        let queueSounds = defaults.object(forKey: "queueSounds") != nil ? defaults.bool(forKey: "queueSounds") : true  // Valor por defecto en true
         return GameOptions(changeInterval: changeInterval, soundEnabled: soundEnabled, enableTutorial: enableTutorial, queueSounds: queueSounds)
     }
 }
