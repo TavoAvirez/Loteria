@@ -8,13 +8,14 @@
 import Combine
 import SwiftUI
 import AVFoundation
-
+import GoogleMobileAds
 
 class GameModel: ObservableObject{
     @Published var options: GameOptions
     @Published var connectToWatchModel = ConnectToWatchModel()
+    @Published var gameCount = 0
+    @Published var interstitial: GADInterstitialAd?
     
-
     init() {
         
         self.options = GameOptions.loadFromUserDefaults()
@@ -240,4 +241,19 @@ class GameModel: ObservableObject{
     }
     
     // Otros métodos que manejen la lógica del juego...
+    
+    func loadInterstitial() {
+        let request = GADRequest()
+        let interstitialTest = "ca-app-pub-3940256099942544/4411468910"
+        let interstitialProd = "ca-app-pub-6001921858582655/7276832781"
+        
+        GADInterstitialAd.load(withAdUnitID: interstitialProd, request: request) { ad, error in
+            if let error = error {
+                print("Error al cargar el interstitial: \(error.localizedDescription)")
+                return
+            }
+            self.interstitial = ad
+            print("✅ Interstitial listo para mostrar")
+        }
+    }
 }

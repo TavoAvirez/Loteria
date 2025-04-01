@@ -31,7 +31,7 @@ class SoundModel: NSObject, AVAudioPlayerDelegate {
                 print("encolado")
                 SoundQueue.shared.enqueueSound(named: soundName, formatType: formatType, initialSound: initialSound, gameModel: gameModel)
             } else {
-                print("inmediato")
+//                print("inmediato")
                 // Si no se deben encolar, reproduce el sonido inmediatamente
                 playSoundImmediately(named: soundName, formatType: formatType)
             }
