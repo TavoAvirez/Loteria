@@ -33,7 +33,7 @@ class GameOptions: ObservableObject {
         }
     }
     
-    init(changeInterval: TimeInterval, soundEnabled: Bool, enableTutorial: Bool, queueSounds: Bool) {
+    init(changeInterval: TimeInterval = 5.0, soundEnabled: Bool = true, enableTutorial: Bool = true, queueSounds: Bool = true) {
         self.changeInterval = changeInterval
         self.soundEnabled = soundEnabled
         self.enableTutorial = enableTutorial

@@ -12,7 +12,7 @@ struct ContentView: View {
     // Inicializa el modelo del juego con opciones personalizadas usando @StateObject
     @StateObject private var gameModel = GameModel()
     @State private var isVisible = true
-    
+
     
     
     var body: some View {
@@ -22,20 +22,23 @@ struct ContentView: View {
                 // Sección de cartas usadas
                 UsedCards(gameModel: gameModel)
                 Spacer()
-                
-                
+//                BannerAd(adUnitID: "ca-app-pub-3940256099942544/2934735716").frame(height: 50)
+
                 // Binding para actualizar las cartas usadas
                 CardAppear(gameModel: gameModel)
                     .overlay(
                         // Solo superponer el ícono de pausa sobre la vista de cartas
                         gameModel.gamePaused ? PauseOverlay(gameModel: gameModel) : nil
                     ).frame(maxWidth: .infinity, maxHeight: .infinity)
-                BannerAd().frame(height: 50) // Altura para el banner
+                BannerAd(adUnitID: "ca-app-pub-3940256099942544/2934735716").frame(height: 50)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(0)
             .background(.backgroundApp)
             
+        }
+        .onAppear(){
+            gameModel.loadInterstitial()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -43,6 +46,7 @@ struct ContentView: View {
 
 struct CardAppear: View {
     @ObservedObject var gameModel: GameModel
+    @State private var resetGameIsPresented = false
     
     fileprivate func progressRectangule() -> some View {
         return RoundedRectangle(cornerRadius: 10)
@@ -79,8 +83,10 @@ struct CardAppear: View {
                     
                     if gameModel.gameStarted || gameModel.gamePaused || gameModel.cartasUsadas.count == 54{
                         Button(action: {
-                            gameModel.resetGame()
-                            gameModel.connectToWatchModel.resetGameToWatch()
+                            resetGameIsPresented = true
+                            if !gameModel.gamePaused {
+                                gameModel.pauseGame()
+                            }
                         }) {
                             ZStack(alignment: .bottomTrailing) {
                                 Image(systemName: "repeat")
@@ -99,6 +105,32 @@ struct CardAppear: View {
                                     .offset(x: 0, y: -10) // Desplazar hacia la esquina inferior derecha
                                 
                             }
+                            .alert("¿Reiniciar el juego?", isPresented: $resetGameIsPresented) {
+                                   Button("Cancelar", role: .cancel) {}
+                                Button("Reiniciar", role: .destructive) {
+                                      if gameModel.cartasUsadas.count >= 10 {
+                                          gameModel.gameCount += 1
+                                      }
+
+                                    if gameModel.gameCount >= 5 {
+                                        if let interstitial = gameModel.interstitial {
+                                              let root = UIApplication.shared.windows.first?.rootViewController
+                                              interstitial.present(fromRootViewController: root!)
+                                              gameModel.gameCount = 0
+                                          } else {
+                                              print("Interstitial ad not ready")
+                                          }
+                                        // y después cargas uno nuevo:
+                                        gameModel.loadInterstitial()
+                                      }
+
+                                      gameModel.resetGame()
+                                      gameModel.connectToWatchModel.resetGameToWatch()
+                                    gameModel.loadInterstitial() // Carga uno nuevo
+                                  }
+                               } message: {
+                                   Text("Esto reiniciará el juego y se perderá el progreso actual.")
+                               }
                         }
                     }
                 }
